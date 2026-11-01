@@ -53,6 +53,22 @@ Contêiner `node:22-bookworm-slim` rodando `boot.mjs` contra a release real: dow
 orçamento com upload gravado no volume, otimização de imagens (sharp) e banco (better-sqlite3) funcionando, e troca
 automática de versão após novo push.
 
+## VPS atual: EasyPanel (Ubuntu 24.04, KVM 2, IP 177.7.32.100)
+
+O VPS da LAB81 veio com o **EasyPanel** (painel Docker com proxy e HTTPS próprios nas portas 80/443).
+Por isso usamos o `Dockerfile` da raiz, e não o `docker-compose.yaml` com Caddy, que disputaria as portas 80/443.
+
+No EasyPanel (http://177.7.32.100:3000):
+1. Projeto `lab81` → **+ Serviço → App** (nome `site`).
+2. **Fonte: Git** → `https://github.com/jaymissonsouza-cpu/Lab81.git`, branch `main`, caminho `/`.
+   **Build: Dockerfile** (arquivo `Dockerfile`). Implantar.
+3. **Montagens → Volume**: nome `lab81-data`, caminho `/data` (banco e arquivos; obrigatório).
+4. **Domínios**: `lab81studio.com.br` e `www.lab81studio.com.br`, HTTPS ligado, porta **3000**.
+5. **DNS (hPanel)**: registros A de `@` e `www` → `177.7.32.100`.
+6. Senha inicial do painel do site: logs do serviço (`SENHA INICIAL DO PAINEL`); login `admin@lab81studio.com.br`.
+
+Atualizações: automáticas (o contêiner busca a release `producao` a cada 5 min). Não é preciso reimplantar no EasyPanel.
+
 ## Primeira instalação pelo celular (sem token, sem terminal)
 
 O compose funciona **sem nenhuma variável**: na primeira inicialização o contêiner gera o `SESSION_SECRET` e a

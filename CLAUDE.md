@@ -16,3 +16,5 @@
   (Docker, `deploy/boot.mjs`) atualiza sozinho em até 5 minutos. Detalhes em `docs/PUBLICACAO.md`.
 - Fluxo de trabalho: desenvolver em `claude/lab81-website`, validar (lint, typecheck, build) e enviar para `main`.
 - Domínio: `lab81studio.com.br` (registrado na Hostinger em 01/11/2026).
+- VPS Hostinger KVM 2, IP `177.7.32.100`, com **EasyPanel** (usar o `Dockerfile` da raiz; ver `docs/PUBLICACAO.md`).
+- O ambiente do Claude não acessa o IP do VPS (rede restrita); conferir pelo domínio, DNS público e prints do usuário.
