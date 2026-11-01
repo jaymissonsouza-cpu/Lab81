@@ -11,7 +11,7 @@ read -rp "Domínio sem www para redirecionar (ex.: lab81.com.br, ou vazio): " AP
 read -rp "E-mail do administrador do painel: " ADMIN_EMAIL
 read -rsp "Senha do painel (mín. 10 caracteres): " ADMIN_PASS; echo
 [ ${#ADMIN_PASS} -ge 10 ] || { echo "Senha muito curta."; exit 1; }
-read -rp "Chave PÚBLICA SSH de deploy (linha ssh-ed25519 ...): " DEPLOY_PUBKEY
+read -rp "Chave PÚBLICA SSH de deploy (deixe vazio para gerar uma agora): " DEPLOY_PUBKEY
 
 echo "==> Pacotes"
 apt-get update -y
@@ -19,6 +19,13 @@ apt-get install -y ca-certificates curl gnupg nginx sqlite3 certbot python3-cert
 if ! command -v node >/dev/null || [ "$(node -v | cut -d. -f1 | tr -d v)" -lt 20 ]; then
   curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   apt-get install -y nodejs
+fi
+
+GENERATED_KEY=""
+if [ -z "$DEPLOY_PUBKEY" ]; then
+  GENERATED_KEY=/root/lab81_deploy
+  [ -f "$GENERATED_KEY" ] || ssh-keygen -q -t ed25519 -N "" -C "github-deploy-lab81" -f "$GENERATED_KEY"
+  DEPLOY_PUBKEY=$(cat "$GENERATED_KEY.pub")
 fi
 
 echo "==> Usuário e pastas"
@@ -123,14 +130,33 @@ BK
 chmod +x /usr/local/bin/lab81-backup
 echo "0 3 * * * lab81 /usr/local/bin/lab81-backup" > /etc/cron.d/lab81-backup
 
-cat <<DONE
-
-✔ Servidor preparado.
-
-Próximos passos:
- 1. DNS: aponte $SERVER_NAMES para o IP deste servidor (registro A).
- 2. Publique pela primeira vez (push na branch main no GitHub).
- 3. Com o DNS propagado, ative o HTTPS:
-      certbot --nginx -d $DOMAIN${APEX:+ -d $APEX} --redirect
- 4. No GitHub, secret VPS_KNOWN_HOSTS = saída de:  ssh-keyscan -H $(hostname -I | awk '{print $1}')
-DONE
+IP=$(hostname -I | awk '{print $1}')
+echo
+echo "✔ Servidor preparado."
+echo
+echo "════════ Copie para o GitHub: Settings → Secrets and variables → Actions ════════"
+echo
+echo "Secret VPS_HOST:"
+echo "$IP"
+echo
+echo "Secret VPS_USER:"
+echo "lab81"
+echo
+echo "Secret VPS_KNOWN_HOSTS:"
+ssh-keyscan -H "$IP" 2>/dev/null
+echo
+if [ -n "$GENERATED_KEY" ]; then
+  echo "Secret VPS_SSH_KEY (copie TUDO, incluindo as linhas BEGIN/END):"
+  cat "$GENERATED_KEY"
+  echo
+  echo "(Depois de salvar no GitHub, apague a cópia local: rm $GENERATED_KEY)"
+fi
+echo
+echo "Variable NEXT_PUBLIC_SITE_URL:"
+echo "https://$DOMAIN"
+echo
+echo "════════ Depois ════════"
+echo " 1. DNS: aponte $SERVER_NAMES para $IP (registro A)."
+echo " 2. No GitHub: Actions → CI / Deploy → Run workflow (branch main) para a 1ª publicação."
+echo " 3. Com o DNS propagado, ative o HTTPS:"
+echo "      certbot --nginx -d $DOMAIN${APEX:+ -d $APEX} --redirect"

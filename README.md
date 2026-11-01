@@ -102,22 +102,18 @@ push na main → GitHub Actions (lint, tipos, build) → envia release por SSH �
 
 Requisitos: VPS **Ubuntu 22.04 ou 24.04 (x86_64)**, 1 GB de RAM ou mais, acesso root e um domínio.
 
-1. No seu computador, gere a chave de deploy:
-   ```bash
-   ssh-keygen -t ed25519 -f lab81_deploy -N "" -C "github-deploy"
-   ```
-2. No servidor, como root, rode o script e responda às perguntas (domínio, e-mail e senha do painel e o conteúdo de `lab81_deploy.pub`):
+1. No servidor, como root, rode o script e responda às perguntas (domínio, e-mail e senha do painel; deixe a chave SSH vazia para ele gerar uma):
    ```bash
    curl -fsSL https://raw.githubusercontent.com/jaymissonsouza-cpu/Lab81/main/deploy/setup-vps.sh -o setup-vps.sh
    bash setup-vps.sh
    ```
    O script instala Node 22, Nginx, firewall, serviço `lab81`, backup diário às 3h e cria o `/srv/lab81/.env` com a senha
    do painel já protegida (hash) e um `SESSION_SECRET` aleatório.
-3. No GitHub → *Settings → Secrets and variables → Actions*:
+2. No fim, o script imprime exatamente o que copiar para o GitHub → *Settings → Secrets and variables → Actions*:
    - **Secrets:** `VPS_HOST` (IP), `VPS_USER` = `lab81`, `VPS_SSH_KEY` (conteúdo de `lab81_deploy`, a chave **privada**),
      `VPS_KNOWN_HOSTS` (saída de `ssh-keyscan -H <IP>`)
    - **Variables:** `NEXT_PUBLIC_SITE_URL` (ex.: `https://www.lab81.com.br`) e, se houver, `NEXT_PUBLIC_GTM_ID`
-4. Aponte o DNS do domínio para o IP do servidor, faça um push na `main` e, com o DNS propagado, ative o HTTPS:
+3. Aponte o DNS do domínio para o IP do servidor, rode o workflow (*Actions → CI / Deploy → Run workflow*, branch `main`) e, com o DNS propagado, ative o HTTPS:
    ```bash
    certbot --nginx -d www.lab81.com.br -d lab81.com.br --redirect
    ```
