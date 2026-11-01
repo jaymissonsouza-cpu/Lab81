@@ -1,7 +1,7 @@
 export const SITE_NAME = "LAB81 Studio";
 export const SITE_TAGLINE = "Da ideia ao objeto.";
 export const SITE_DESCRIPTION =
-  "Estúdio de design e fabricação digital em Recife. Impressão 3D personalizada, modelagem 3D, prototipagem e produtos autorais com acabamento profissional.";
+  "Estúdio de design e fabricação digital em Recife. Impressão 3D personalizada, brindes e chaveiros, soluções para empresas e restaurantes, modelagem 3D, prototipagem e peças sob medida.";
 
 export function siteUrl(path = "/") {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");

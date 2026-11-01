@@ -27,8 +27,8 @@ export function CtaBand({
           <div className="reveal max-w-2xl">
             <span aria-hidden="true" className="block h-0.5 w-12 bg-orange" />
             <h2 id={`cta-${location}`} className="mt-6 text-h2">
-              {title.replace(/\.$/, "")}
-              <span className="dot">.</span>
+              {/[.?!]$/.test(title) ? title.slice(0, -1) : title}
+              <span className="dot">{/[.?!]$/.test(title) ? title.slice(-1) : "."}</span>
             </h2>
             <p className="mt-5 text-lead text-titanium">{text}</p>
           </div>

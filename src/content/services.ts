@@ -1,5 +1,6 @@
 /**
- * Serviços confirmados pela LAB81: impressão 3D sob demanda, modelagem 3D, prototipagem e produtos autorais.
+ * Serviços confirmados pela LAB81: impressão 3D sob demanda, modelagem 3D, prototipagem, produtos autorais,
+ * brindes/lembranças/chaveiros personalizados e soluções para empresas (restaurantes, comércio, escritórios).
  * Materiais confirmados: PLA, PETG, ABS e ASA (FDM).
  * Não adicione aqui serviços que ainda não são oferecidos.
  */
@@ -8,7 +9,7 @@ export type ServiceCard = {
   title: string;
   description: string;
   href: string;
-  icon: "print" | "model" | "prototype" | "gear" | "spark";
+  icon: "print" | "model" | "prototype" | "gear" | "spark" | "tag" | "store";
 };
 
 export const SERVICE_CARDS: ServiceCard[] = [
@@ -17,6 +18,18 @@ export const SERVICE_CARDS: ServiceCard[] = [
     description: "Fabricamos sua peça a partir de um arquivo 3D, com orientação sobre material, resistência e acabamento.",
     href: "/impressao-3d-personalizada",
     icon: "print",
+  },
+  {
+    title: "Brindes, lembranças e chaveiros",
+    description: "Chaveiros, lembrancinhas de festas e eventos, presentes e brindes com nome ou logomarca, em poucas unidades ou pequenas séries.",
+    href: "/brindes-personalizados",
+    icon: "tag",
+  },
+  {
+    title: "Soluções para empresas",
+    description: "Peças sob medida para restaurantes, lojas e escritórios: porta-QR code, displays, sinalização, organizadores e peças de reposição.",
+    href: "/solucoes-para-empresas",
+    icon: "store",
   },
   {
     title: "Modelagem 3D",
@@ -67,6 +80,148 @@ export const MATERIALS_INFO = [
 ];
 
 export const SERVICE_PAGES: Record<string, ServicePage> = {
+
+  "brindes-personalizados": {
+    path: "/brindes-personalizados",
+    eyebrow: "Brindes e lembranças",
+    h1: "Brindes, lembranças e chaveiros personalizados em impressão 3D",
+    metaTitle: "Brindes e chaveiros personalizados em impressão 3D | Recife",
+    metaDescription:
+      "Chaveiros, lembrancinhas de festas e eventos, presentes e brindes corporativos com nome ou logomarca, feitos em impressão 3D em Recife. Peça seu orçamento.",
+    lead:
+      "Uma lembrança que ninguém mais tem. Criamos chaveiros, lembrancinhas, presentes e brindes com nome, data, formato ou logomarca, do modelo à peça pronta.",
+    image: { src: "/demo/vaso-escultural-areia.webp", alt: "Peça personalizada impressa em 3D (imagem demonstrativa)" },
+    highlights: [
+      { title: "Personalização de verdade", text: "Nomes, iniciais, datas, formatos e logomarcas criados para você." },
+      { title: "Da unidade à pequena série", text: "Sem molde: dá para fazer uma peça especial ou lotes para eventos." },
+      { title: "Design incluído no processo", text: "Se você só tem a ideia, desenvolvemos o modelo com você." },
+    ],
+    sections: [
+      {
+        title: "O que dá para fazer",
+        paragraphs: ["Alguns exemplos do que a impressão 3D permite criar com personalização:"],
+        bullets: [
+          "Chaveiros com nome, iniciais, formatos ou logomarca",
+          "Lembrancinhas de aniversário, casamento, chá de bebê, batizado e formatura",
+          "Brindes corporativos e kits para eventos, feiras e equipes",
+          "Presentes personalizados, miniaturas e objetos com significado",
+          "Peças comemorativas, como troféus e placas de reconhecimento",
+        ],
+      },
+      {
+        title: "Para eventos e empresas",
+        paragraphs: [
+          "Para festas e ações de marca, a quantidade e o prazo fazem diferença. Informe no orçamento quantas unidades você precisa e para quando: assim conseguimos indicar o formato, o tamanho e o material que tornam o projeto viável.",
+          "Para brindes com logomarca, envie o arquivo do logo (de preferência em vetor: SVG, PDF ou AI). Adaptamos o desenho para que ele fique legível na peça impressa.",
+        ],
+      },
+      {
+        title: "Cores e acabamento",
+        paragraphs: [
+          "As peças são produzidas em filamento, nas cores disponíveis no momento do pedido. Detalhes muito pequenos têm limite de definição, por isso ajustamos textos e desenhos para garantir uma leitura clara.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Qual a quantidade mínima?",
+        a: "Não há quantidade mínima: você pode encomendar uma única peça ou um lote. Em lotes maiores, parte da preparação é compartilhada entre as unidades.",
+      },
+      {
+        q: "Vocês colocam nome ou logomarca?",
+        a: "Sim. Nome, iniciais, datas e logomarcas podem fazer parte da peça. Para logos, envie o arquivo em boa resolução ou vetor.",
+      },
+      {
+        q: "Com quanto tempo de antecedência devo pedir para um evento?",
+        a: "Depende da quantidade e da complexidade. Peça o orçamento informando a data do evento: o prazo é confirmado na proposta.",
+      },
+    ],
+    related: [
+      { href: "/solucoes-para-empresas", label: "Soluções para empresas" },
+      { href: "/produtos", label: "Produtos autorais" },
+      { href: "/blog/brindes-e-chaveiros-personalizados-em-impressao-3d", label: "Ideias de brindes em impressão 3D" },
+    ],
+    ctaTitle: "Vamos criar sua lembrança?",
+  },
+
+  "solucoes-para-empresas": {
+    path: "/solucoes-para-empresas",
+    eyebrow: "Para empresas",
+    h1: "Impressão 3D para empresas, restaurantes e comércio",
+    metaTitle: "Impressão 3D para empresas e restaurantes em Recife",
+    metaDescription:
+      "Porta-QR code, displays, porta-cardápios, sinalização, organizadores, peças de reposição e brindes com a sua marca. Soluções em impressão 3D para negócios em Recife.",
+    lead:
+      "Peças sob medida para o dia a dia do seu negócio. Do porta-QR code da mesa à peça de reposição de um equipamento, desenvolvemos e fabricamos o que a sua operação precisa, com a sua marca quando fizer sentido.",
+    image: { src: "/demo/peca-funcional-preta.webp", alt: "Peça funcional preta impressa em 3D (imagem demonstrativa)" },
+    highlights: [
+      { title: "Feito para a sua operação", text: "Medidas, encaixes e identidade visual do seu negócio." },
+      { title: "Sem molde, sem estoque", text: "Produza a quantidade necessária e repita quando precisar." },
+      { title: "Reposição rápida", text: "Peças que quebraram ou não são mais vendidas podem ser reproduzidas." },
+    ],
+    sections: [
+      {
+        title: "Restaurantes, bares e cafés",
+        paragraphs: ["Itens de salão e balcão com a identidade do seu estabelecimento:"],
+        bullets: [
+          "Porta-QR code e suportes de mesa para cardápio digital e pagamento",
+          "Porta-cardápios, numeradores de mesa e plaquinhas de reserva",
+          "Displays de balcão, suportes de comunicação e sinalização",
+          "Organizadores e suportes para sachês, guardanapos e utensílios",
+          "Peças de reposição e adaptadores para equipamentos",
+        ],
+      },
+      {
+        title: "Lojas e comércio",
+        paragraphs: ["Exposição e organização que valorizam o produto:"],
+        bullets: [
+          "Expositores, ganchos e suportes de vitrine",
+          "Sinalização, letreiros de mesa e peças com logomarca",
+          "Organizadores de balcão e de estoque",
+        ],
+      },
+      {
+        title: "Escritórios, serviços e indústria",
+        paragraphs: ["Soluções práticas e técnicas:"],
+        bullets: [
+          "Suportes, gabaritos e dispositivos sob medida",
+          "Peças de reposição para máquinas e mobiliário",
+          "Protótipos de produtos e embalagens",
+          "Brindes corporativos e kits de boas-vindas",
+        ],
+      },
+      {
+        title: "Contato com alimentos",
+        paragraphs: [
+          "Peças impressas em filamento são indicadas para suporte, organização e exposição. Para itens que terão contato direto com alimentos, avaliamos cada caso no orçamento, já que o processo de impressão por camadas exige cuidados específicos de material e higienização.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Vocês atendem pedidos em quantidade?",
+        a: "Sim. Produzimos de uma unidade a pequenas séries. Informe a quantidade no orçamento para receber valor e prazo.",
+      },
+      {
+        q: "Dá para colocar a logomarca da empresa?",
+        a: "Sim. Envie o logo, de preferência em vetor (SVG, PDF ou AI), e adaptamos o desenho à peça.",
+      },
+      {
+        q: "Conseguem reproduzir uma peça de um equipamento?",
+        a: "Na maioria dos casos, sim. Com fotos e medidas da peça original, modelamos e fabricamos em material adequado ao uso. Para peças que sofrem esforço ou calor, indicamos PETG, ABS ou ASA.",
+      },
+      {
+        q: "Vocês emitem nota fiscal?",
+        a: "Informe essa necessidade no orçamento para combinarmos as condições do pedido.",
+      },
+    ],
+    related: [
+      { href: "/brindes-personalizados", label: "Brindes e chaveiros personalizados" },
+      { href: "/impressao-3d-personalizada#pecas-funcionais", label: "Peças funcionais e reposição" },
+      { href: "/prototipagem-3d", label: "Prototipagem 3D" },
+    ],
+    ctaTitle: "O que o seu negócio precisa?",
+  },
   "impressao-3d-recife": {
     path: "/impressao-3d-recife",
     eyebrow: "Impressão 3D em Recife",
@@ -86,13 +241,15 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
       {
         title: "Para quem é o nosso serviço",
         paragraphs: [
-          "Atendemos pessoas, profissionais e empresas que precisam transformar uma ideia em objeto físico. Arquitetos e designers que precisam de maquetes e peças de apresentação, empreendedores validando um produto, técnicos em busca de uma peça de reposição e qualquer pessoa com um projeto pessoal.",
+          "Atendemos pessoas, profissionais e empresas que precisam transformar uma ideia em objeto físico: quem quer uma lembrança ou um brinde personalizado, restaurantes e lojas que precisam de peças com a sua marca, arquitetos e designers com maquetes, empreendedores validando um produto, técnicos em busca de uma peça de reposição e qualquer pessoa com um projeto pessoal.",
         ],
         bullets: [
+          "Brindes, lembranças e chaveiros personalizados",
+          "Peças para restaurantes, lojas e escritórios",
           "Peças de reposição e adaptação",
           "Protótipos de produtos",
-          "Objetos decorativos e personalizados",
           "Suportes, encaixes e peças funcionais",
+          "Objetos decorativos e presentes",
           "Pequenas séries sem custo de molde",
         ],
       },

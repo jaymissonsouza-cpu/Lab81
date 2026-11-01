@@ -8,6 +8,8 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
   { path: "/", priority: 1, changeFrequency: "weekly" },
   { path: "/impressao-3d-recife", priority: 0.9, changeFrequency: "monthly" },
   { path: "/impressao-3d-personalizada", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/brindes-personalizados", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/solucoes-para-empresas", priority: 0.9, changeFrequency: "monthly" },
   { path: "/modelagem-3d", priority: 0.8, changeFrequency: "monthly" },
   { path: "/prototipagem-3d", priority: 0.8, changeFrequency: "monthly" },
   { path: "/servicos", priority: 0.7, changeFrequency: "monthly" },

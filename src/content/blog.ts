@@ -332,3 +332,53 @@ Comece pela pergunta: **qual é o uso da peça e quantas unidades são necessár
 [Conte sua ideia](/orcamento) e receba uma orientação personalizada.`,
   },
 ];
+
+/** Artigos adicionados na etapa v2 do conteúdo inicial. */
+export const BLOG_POSTS_V2: SeedPost[] = [
+  {
+    slug: "brindes-e-chaveiros-personalizados-em-impressao-3d",
+    title: "Brindes e chaveiros personalizados em impressão 3D: ideias e como encomendar",
+    excerpt: "Chaveiros, lembrancinhas de festa, brindes com logomarca e peças para restaurantes: veja o que dá para criar e o que informar no pedido.",
+    published_at: "2026-11-01",
+    seo_title: "Brindes e chaveiros personalizados em impressão 3D: ideias",
+    seo_description:
+      "Ideias de chaveiros, lembrancinhas e brindes personalizados em impressão 3D para festas, eventos e empresas, e o que informar para pedir um orçamento.",
+    content: `A impressão 3D não serve só para peças técnicas ou decoração. Como não precisa de molde, ela é ótima para criar **objetos personalizados em pequenas quantidades**: exatamente o que pedem lembranças, presentes e brindes.
+
+## Ideias para festas e datas especiais
+
+- **Chaveiros** com nome, iniciais ou um formato que represente a pessoa
+- **Lembrancinhas** de aniversário, casamento, chá de bebê, batizado e formatura
+- **Topos e enfeites** com o tema da festa
+- **Miniaturas** e objetos com significado para presentear
+
+## Ideias para empresas e marcas
+
+- **Brindes com logomarca** para clientes, eventos e feiras
+- **Kits de boas-vindas** para equipes
+- **Troféus e peças comemorativas** para campanhas internas
+
+## Ideias para restaurantes e comércio
+
+- **Porta-QR code** de mesa para cardápio digital e pagamento
+- **Porta-cardápios**, numeradores de mesa e plaquinhas de reserva
+- **Displays de balcão** e sinalização com a identidade do estabelecimento
+
+Veja mais em [soluções para empresas](/solucoes-para-empresas).
+
+## O que informar no pedido
+
+1. **Quantidade** de peças e **data** em que você precisa delas.
+2. **Personalização:** nomes, datas, frases ou o arquivo do logo (de preferência em vetor: SVG, PDF ou AI).
+3. **Tamanho aproximado** e onde a peça será usada.
+4. **Cores** desejadas: confirmamos a disponibilidade na proposta.
+
+## Cuidados para um bom resultado
+
+- **Textos muito pequenos** perdem definição. Ajustamos o desenho para que nomes e logos fiquem legíveis.
+- **Peças finas** podem ficar frágeis: em chaveiros, por exemplo, a espessura e o furo da argola são pensados para o uso diário.
+- **Contato com alimentos** exige avaliação específica do material e do uso.
+
+Tem uma ideia? [Peça um orçamento](/orcamento) informando a quantidade e a data do seu evento.`,
+  },
+];

@@ -18,7 +18,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
         <a href="/api/admin/orcamentos.csv" className="btn btn-outline btn-sm">Exportar CSV</a>
       </div>
       <form className="mt-6 flex flex-wrap gap-3" role="search">
-        <input name="q" defaultValue={q} placeholder="Buscar por protocolo, nome ou e-mail" className="field max-w-sm" />
+        <input name="q" defaultValue={q} placeholder="Buscar por protocolo, nome, empresa ou e-mail" className="field max-w-sm" />
         <select name="status" defaultValue={status} className="field max-w-[14rem]">
           <option value="">Todos os status</option>
           {Object.entries(QUOTE_STATUSES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
@@ -34,7 +34,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
             {quotes.map((x) => (
               <tr key={x.id} className="hover:bg-carbon-800/60">
                 <td className="p-3"><Link href={`/admin/orcamentos/${x.id}`} className="font-medium hover:text-orange">{x.protocol}</Link></td>
-                <td className="p-3"><span className="block">{x.name}</span><span className="text-xs text-titanium-600">{x.email}</span></td>
+                <td className="p-3"><span className="block">{x.name}{x.company ? ` · ${x.company}` : ""}</span><span className="text-xs text-titanium-600">{x.email}</span></td>
                 <td className="p-3 text-titanium">{PROJECT_TYPE_LABEL[x.project_type] ?? x.project_type}</td>
                 <td className="p-3 text-titanium">{x.material || "—"}</td>
                 <td className="p-3 text-titanium">{x.quantity}</td>

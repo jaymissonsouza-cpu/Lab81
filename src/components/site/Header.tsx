@@ -9,7 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   if (href === "/servicos")
-    return ["/servicos", "/impressao-3d", "/modelagem-3d", "/prototipagem-3d"].some((p) => pathname.startsWith(p));
+    return ["/servicos", "/impressao-3d", "/modelagem-3d", "/prototipagem-3d", "/brindes-personalizados", "/solucoes-para-empresas"].some((p) => pathname.startsWith(p));
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

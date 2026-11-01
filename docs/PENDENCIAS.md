@@ -14,6 +14,8 @@ Nada disso é simulado no site: campos vazios simplesmente não aparecem.
 | **Projetos reais executados** (desafio, solução, material) | Painel → Projetos | Textos demonstrativos marcados como tal |
 | Preços / disponibilidade / cores dos produtos | Painel → Produtos | "Sob consulta", sem preço |
 | Página **Sobre**: equipe, história, fotos do estúdio | `src/app/(site)/sobre/page.tsx` | Só o conceito da marca (nada inventado) |
+| **Fotos de brindes, chaveiros e peças para empresas/restaurantes** | Painel → Projetos (categorias "Brindes e lembranças" e "Empresas e comércio" já existem) | Ainda sem itens: as categorias só aparecem no filtro do portfólio quando tiverem projetos. Não foram criados exemplos fictícios |
+| Imagens das páginas Brindes e Empresas | `src/content/services.ts` | Demonstrativas, de peças decorativas/técnicas; trocar por fotos reais de chaveiros, porta-QR code etc. |
 | Serviço "Design de produtos" | `src/content/services.ts` | **Não publicado** (não confirmado) |
 
 ## Dados comerciais (Painel → Configurações)

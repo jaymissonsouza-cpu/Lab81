@@ -18,9 +18,19 @@ export function generateMetadata() {
     path: "/",
     title: "LAB81 Studio | Impressão 3D em Recife — Da ideia ao objeto",
     description:
-      "Estúdio de design e fabricação digital em Recife. Impressão 3D personalizada, modelagem 3D, prototipagem e produtos autorais em PLA, PETG, ABS e ASA. Solicite seu orçamento.",
+      "Impressão 3D em Recife para o que você imaginar: brindes e chaveiros personalizados, peças para empresas e restaurantes, peças técnicas, protótipos e decoração. Solicite seu orçamento.",
   });
 }
+
+/** Amplitude de aplicações: deixa claro que o estúdio fabrica "qualquer coisa", não só decoração. */
+const APPLICATIONS: { icon: IconName; title: string; items: string; href: string }[] = [
+  { icon: "tag", title: "Brindes e lembranças", items: "Chaveiros, lembrancinhas de festas, presentes e brindes com logomarca", href: "/brindes-personalizados" },
+  { icon: "store", title: "Restaurantes e comércio", items: "Porta-QR code, porta-cardápios, displays de balcão e sinalização", href: "/solucoes-para-empresas" },
+  { icon: "gear", title: "Peças técnicas e reposição", items: "Suportes, encaixes, adaptadores e peças que não se encontram mais", href: "/impressao-3d-personalizada#pecas-funcionais" },
+  { icon: "prototype", title: "Protótipos e produtos", items: "Validação de forma, encaixe e função antes de produzir", href: "/prototipagem-3d" },
+  { icon: "cube", title: "Empresas e escritórios", items: "Gabaritos, organizadores, kits de boas-vindas e peças sob medida", href: "/solucoes-para-empresas" },
+  { icon: "spark", title: "Decoração e design", items: "Luminárias, vasos e objetos autorais, personalizáveis", href: "/produtos" },
+];
 
 const PROCESS: { n: string; icon: IconName; title: string; text: string }[] = [
   {
@@ -53,7 +63,7 @@ const DIFFERENTIALS: { icon: IconName; title: string; text: string }[] = [
   { icon: "chat", title: "Atendimento personalizado", text: "Você conversa com quem projeta e fabrica a sua peça, do primeiro contato à entrega." },
   { icon: "layers", title: "Orientação sobre materiais", text: "Indicamos o filamento certo para cada uso: decoração, encaixe, calor ou uso externo." },
   { icon: "cube", title: "Design e fabricação sob demanda", text: "Modelagem e impressão no mesmo estúdio, sem molde e sem quantidade mínima." },
-  { icon: "gear", title: "Soluções para diferentes aplicações", text: "Peças decorativas, técnicas, protótipos e produtos personalizados." },
+  { icon: "gear", title: "Soluções para diferentes aplicações", text: "Brindes, peças para empresas, peças técnicas, protótipos, presentes e decoração." },
   { icon: "pin", title: "Recife e outras regiões", text: "Atendimento em Recife e Região Metropolitana e envio para outras regiões conforme capacidade operacional." },
 ];
 
@@ -123,10 +133,11 @@ export default function HomePage() {
               <span aria-hidden="true" className="block h-0.5 w-8 bg-orange" />
               <p className="mt-4 font-sans text-xs uppercase leading-6 tracking-[0.35em] text-offwhite">Ideias ganham forma aqui.</p>
               <ul className="mt-6 space-y-1.5 text-[0.6875rem] uppercase tracking-[0.25em] text-titanium">
-                <li>Prototipagem</li>
+                <li>Brindes e chaveiros</li>
+                <li>Soluções para empresas</li>
                 <li>Peças funcionais</li>
+                <li>Prototipagem</li>
                 <li>Decoração</li>
-                <li>Produtos sob medida</li>
               </ul>
             </aside>
           </div>
@@ -145,6 +156,37 @@ export default function HomePage() {
             </ul>
           </div>
         )}
+      </section>
+
+
+      {/* ───────────── APLICAÇÕES ───────────── */}
+      <section className="container-site mt-24 md:mt-32" aria-labelledby="aplicacoes-title">
+        <SectionHeading
+          id="aplicacoes-title"
+          eyebrow="O que fabricamos"
+          title="Se dá para imaginar, dá para imprimir."
+          lead="Do chaveiro com o seu nome à peça de reposição de um equipamento. Atendemos pessoas, eventos, restaurantes, lojas e empresas."
+        />
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          {APPLICATIONS.map((a) => (
+            <li key={a.title} className="reveal group relative bg-carbon p-7 transition-colors hover:bg-carbon-800 md:p-8">
+              <Icon name={a.icon} size={30} className="text-orange" strokeWidth={1.25} />
+              <h3 className="mt-6 font-display text-xl font-semibold">
+                <Link href={a.href} className="after:absolute after:inset-0 group-hover:text-orange">
+                  {a.title}
+                </Link>
+              </h3>
+              <p className="mt-2 text-titanium">{a.items}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-6 text-titanium">
+          Não encontrou o que procura?{" "}
+          <Link href="/orcamento" className="text-offwhite underline decoration-orange underline-offset-4 hover:text-orange" data-track="quote_cta_click" data-track-location="aplicacoes">
+            Conte sua ideia
+          </Link>{" "}
+          e a gente avalia.
+        </p>
       </section>
 
       {/* ───────────── SERVIÇOS ───────────── */}

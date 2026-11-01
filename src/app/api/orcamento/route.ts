@@ -23,6 +23,7 @@ const schema = z.object({
   notes: z.string().trim().max(5000).default(""),
   product_slug: z.string().trim().max(120).default(""),
   name: z.string().trim().min(2, "Informe seu nome.").max(120),
+  company: z.string().trim().max(160).default(""),
   email: z.string().trim().email("Informe um e-mail válido.").max(160),
   phone: z
     .string()
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest) {
       id,
       protocol,
       project_type: PROJECT_TYPE_LABEL[data.project_type] ?? data.project_type,
-      name: data.name,
+      name: data.company ? `${data.name} (${data.company})` : data.name,
       email: data.email,
       phone: data.phone,
       city: data.city,

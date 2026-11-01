@@ -153,6 +153,9 @@ const MIGRATIONS: string[] = [
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
   `,
+  /* 2 — empresa (opcional) no orçamento, para pedidos B2B */ `
+  ALTER TABLE quotes ADD COLUMN company TEXT NOT NULL DEFAULT '';
+  `,
 ];
 
 declare global {

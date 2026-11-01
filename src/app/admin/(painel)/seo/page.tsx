@@ -10,6 +10,8 @@ const PAGES = [
   { path: "/servicos", label: "Serviços" },
   { path: "/impressao-3d-recife", label: "Impressão 3D em Recife" },
   { path: "/impressao-3d-personalizada", label: "Impressão 3D personalizada" },
+  { path: "/brindes-personalizados", label: "Brindes e chaveiros" },
+  { path: "/solucoes-para-empresas", label: "Soluções para empresas" },
   { path: "/modelagem-3d", label: "Modelagem 3D" },
   { path: "/prototipagem-3d", label: "Prototipagem 3D" },
   { path: "/projetos", label: "Projetos" },

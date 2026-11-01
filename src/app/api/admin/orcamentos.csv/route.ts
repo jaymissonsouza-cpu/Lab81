@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 /** Exporta orçamentos em CSV (para planilhas ou importação em CRM). */
 export async function GET() {
   if (!(await getSession())) return new NextResponse("Não autorizado", { status: 401 });
-  const cols = ["protocol", "created_at", "status", "project_type", "name", "email", "phone", "city", "material", "quantity", "deadline", "description"] as const;
+  const cols = ["protocol", "created_at", "status", "project_type", "name", "company", "email", "phone", "city", "material", "quantity", "deadline", "description"] as const;
   // Prefixo ' evita injeção de fórmulas em planilhas
   const esc = (v: unknown) => {
     let s = String(v ?? "");

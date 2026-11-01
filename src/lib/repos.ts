@@ -118,6 +118,7 @@ export type Quote = {
   notes: string;
   product_slug: string;
   name: string;
+  company: string;
   email: string;
   phone: string;
   city: string;
@@ -420,9 +421,9 @@ export function createQuote(q: NewQuote, files: Omit<QuoteFile, "id" | "quote_id
     const res = d
       .prepare(
         `INSERT INTO quotes (protocol, project_type, description, dimensions, material, colors, quantity, deadline, notes,
-         product_slug, name, email, phone, city, contact_preference, consent_at, source)
+         product_slug, name, company, email, phone, city, contact_preference, consent_at, source)
          VALUES (@protocol, @project_type, @description, @dimensions, @material, @colors, @quantity, @deadline, @notes,
-         @product_slug, @name, @email, @phone, @city, @contact_preference, @consent_at, @source)`,
+         @product_slug, @name, @company, @email, @phone, @city, @contact_preference, @consent_at, @source)`,
       )
       .run({ ...q, colors: JSON.stringify(q.colors), source: JSON.stringify(q.source) });
     const id = Number(res.lastInsertRowid);
@@ -447,9 +448,9 @@ export function listQuotes(opts: { status?: string; q?: string } = {}): Quote[] 
     params.push(opts.status);
   }
   if (opts.q) {
-    clauses.push("(protocol LIKE ? OR name LIKE ? OR email LIKE ?)");
+    clauses.push("(protocol LIKE ? OR name LIKE ? OR email LIKE ? OR company LIKE ?)");
     const like = `%${opts.q}%`;
-    params.push(like, like, like);
+    params.push(like, like, like, like);
   }
   const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
   return (db().prepare(`SELECT * FROM quotes ${where} ORDER BY created_at DESC, id DESC LIMIT 500`).all(...params) as Row[]).map(toQuote);

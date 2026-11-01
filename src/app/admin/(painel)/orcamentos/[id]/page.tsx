@@ -88,6 +88,7 @@ export default async function QuoteDetail({ params }: { params: Promise<{ id: st
           <section className="rounded-lg border border-line p-5 text-sm">
             <h2 className="font-display text-lg font-semibold">Cliente</h2>
             <p className="mt-3 text-base">{q.name}</p>
+            {q.company && <p className="text-titanium">{q.company}</p>}
             <p><a href={`mailto:${q.email}?subject=${encodeURIComponent(`Orçamento ${q.protocol} — LAB81 Studio`)}`} className="text-orange break-all">{q.email}</a></p>
             {q.phone && <p className="text-titanium">{q.phone}</p>}
             {q.city && <p className="text-titanium">{q.city}</p>}

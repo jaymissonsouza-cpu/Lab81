@@ -30,6 +30,7 @@ type Data = {
   notes: string;
   product_slug: string;
   name: string;
+  company: string;
   email: string;
   phone: string;
   city: string;
@@ -66,6 +67,7 @@ export function QuoteForm({ materials, colors, maxModelMb, preset }: QuoteFormPr
     notes: "",
     product_slug: preset?.productSlug ?? "",
     name: "",
+    company: "",
     email: "",
     phone: "",
     city: "",
@@ -227,6 +229,7 @@ export function QuoteForm({ materials, colors, maxModelMb, preset }: QuoteFormPr
       notes: data.notes,
       product_slug: data.product_slug,
       name: data.name,
+      company: data.company,
       email: data.email,
       phone: data.phone,
       city: data.city,
@@ -375,7 +378,7 @@ export function QuoteForm({ materials, colors, maxModelMb, preset }: QuoteFormPr
                 rows={5}
                 value={data.description}
                 onChange={(e) => set("description", e.target.value)}
-                placeholder="Ex.: Preciso de um suporte para fixar uma prateleira. A peça original quebrou e tenho fotos e medidas."
+                placeholder="Ex.: 50 chaveiros com a logomarca do meu restaurante · Um porta-QR code para 12 mesas · Um suporte para substituir uma peça quebrada"
                 {...aria("description")}
               />
               <p className="field-hint">Para que a peça será usada? Onde vai ficar? Vai sofrer esforço, calor ou sol?</p>
@@ -565,12 +568,25 @@ export function QuoteForm({ materials, colors, maxModelMb, preset }: QuoteFormPr
               Como falamos com você?
             </h2>
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
-              <div className="sm:col-span-2">
+              <div>
                 <label htmlFor="q-name" className="field-label">
                   Nome
                 </label>
                 <input id="q-name" className="field" autoComplete="name" value={data.name} onChange={(e) => set("name", e.target.value)} {...aria("name")} />
                 {fieldErr("name")}
+              </div>
+              <div>
+                <label htmlFor="q-company" className="field-label">
+                  Empresa <span className="text-titanium-600">(opcional)</span>
+                </label>
+                <input
+                  id="q-company"
+                  className="field"
+                  autoComplete="organization"
+                  placeholder="Restaurante, loja, empresa…"
+                  value={data.company}
+                  onChange={(e) => set("company", e.target.value)}
+                />
               </div>
               <div>
                 <label htmlFor="q-email" className="field-label">
@@ -692,6 +708,7 @@ export function QuoteForm({ materials, colors, maxModelMb, preset }: QuoteFormPr
               </Summary>
               <Summary title="Contato" onEdit={() => setStep(3)}>
                 <Row label="Nome" value={data.name} />
+                {data.company && <Row label="Empresa" value={data.company} />}
                 <Row label="E-mail" value={data.email} />
                 <Row label="Telefone" value={data.phone || "Não informado"} />
                 <Row label="Cidade" value={data.city || "Não informada"} />

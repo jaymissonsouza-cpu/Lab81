@@ -1,12 +1,12 @@
 import type Database from "better-sqlite3";
-import { BLOG_POSTS } from "@/content/blog";
+import { BLOG_POSTS, BLOG_POSTS_V2 } from "@/content/blog";
 
 /**
  * Conteúdo inicial. Executado uma única vez (marcador "seed_version" em settings).
  * Projetos e produtos marcados como is_demo = 1 usam imagens DEMONSTRATIVAS recortadas
  * das referências visuais e devem ser substituídos por trabalhos reais no painel.
  */
-const SEED_VERSION = "1";
+
 
 export const DEFAULT_SETTINGS: Record<string, string> = {
   whatsapp: "",
@@ -200,11 +200,38 @@ const DEMO_PRODUCTS = [
   },
 ];
 
+/**
+ * Etapas incrementais: cada uma roda uma única vez (controle por settings.seed_version).
+ * Nunca altere uma etapa já publicada; adicione uma nova. Assim, itens apagados no painel não voltam.
+ */
+const STEPS: ((db: Database.Database) => void)[] = [seedV1, seedV2];
+
 export function seedDatabase(db: Database.Database) {
   const row = db.prepare("SELECT value FROM settings WHERE key = 'seed_version'").get() as { value: string } | undefined;
-  if (row?.value === SEED_VERSION) return;
+  const current = Number(row?.value ?? 0) || 0;
+  if (current >= STEPS.length) return;
+  db.transaction(() => {
+    for (let v = current; v < STEPS.length; v++) STEPS[v](db);
+    db.prepare("INSERT INTO settings (key, value) VALUES ('seed_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(
+      String(STEPS.length),
+    );
+  })();
+}
 
-  const run = db.transaction(() => {
+/** v2 — amplia o posicionamento: brindes/lembranças e soluções para empresas. */
+function seedV2(db: Database.Database) {
+  const cat = db.prepare("INSERT OR IGNORE INTO categories (type, slug, name, sort) VALUES (?, ?, ?, ?)");
+  cat.run("project", "brindes-e-lembrancas", "Brindes e lembranças", 4);
+  cat.run("project", "empresas", "Empresas e comércio", 5);
+  cat.run("product", "chaveiros-e-lembrancas", "Chaveiros e lembranças", 3);
+  const post = db.prepare(`INSERT OR IGNORE INTO posts
+    (slug, title, excerpt, content, published, published_at, seo_title, seo_description)
+    VALUES (@slug, @title, @excerpt, @content, 1, @published_at, @seo_title, @seo_description)`);
+  for (const p of BLOG_POSTS_V2) post.run(p);
+}
+
+function seedV1(db: Database.Database) {
+  {
     const setSetting = db.prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)");
     for (const [k, v] of Object.entries(DEFAULT_SETTINGS)) setSetting.run(k, v);
 
@@ -236,7 +263,5 @@ export function seedDatabase(db: Database.Database) {
       VALUES (@slug, @title, @excerpt, @content, 1, @published_at, @seo_title, @seo_description)`);
     for (const p of BLOG_POSTS) post.run(p);
 
-    db.prepare("INSERT INTO settings (key, value) VALUES ('seed_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(SEED_VERSION);
-  });
-  run();
+  }
 }

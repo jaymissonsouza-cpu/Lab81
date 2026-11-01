@@ -5,7 +5,9 @@ export const PROJECT_TYPES = [
   { value: "modelagem", label: "Modelagem + impressão", hint: "Tenho uma ideia, esboço, foto ou peça para reproduzir." },
   { value: "prototipo", label: "Protótipo", hint: "Quero validar forma, encaixe ou função de um produto." },
   { value: "peca_funcional", label: "Peça funcional ou reposição", hint: "Suporte, encaixe, adaptador ou peça quebrada." },
-  { value: "produto", label: "Produto autoral", hint: "Quero um produto do catálogo ou uma versão personalizada." },
+  { value: "brinde", label: "Brindes, lembranças ou chaveiros", hint: "Peças personalizadas para presentes, festas, eventos ou marcas." },
+  { value: "empresa", label: "Solução para empresa", hint: "Restaurante, loja ou escritório: displays, porta-QR code, sinalização…" },
+  { value: "produto", label: "Produto do catálogo", hint: "Quero um produto da LAB81 ou uma versão personalizada." },
   { value: "outro", label: "Outro", hint: "Conte sua necessidade na descrição." },
 ] as const;
 export type ProjectType = (typeof PROJECT_TYPES)[number]["value"];

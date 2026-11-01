@@ -7,6 +7,8 @@ import { Icon } from "@/components/ui/Icon";
 const SERVICES = [
   { href: "/impressao-3d-recife", label: "Impressão 3D em Recife" },
   { href: "/impressao-3d-personalizada", label: "Impressão 3D personalizada" },
+  { href: "/brindes-personalizados", label: "Brindes e chaveiros" },
+  { href: "/solucoes-para-empresas", label: "Soluções para empresas" },
   { href: "/modelagem-3d", label: "Modelagem 3D" },
   { href: "/prototipagem-3d", label: "Prototipagem 3D" },
   { href: "/produtos", label: "Produtos autorais" },

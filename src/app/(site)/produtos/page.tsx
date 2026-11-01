@@ -11,7 +11,7 @@ export function generateMetadata() {
     path: "/produtos",
     title: "Produtos autorais impressos em 3D",
     description:
-      "Luminárias, vasos e objetos de design autoral da LAB81 Studio, produzidos sob encomenda em impressão 3D e personalizáveis em cor e medida.",
+      "Produtos autorais e personalizados da LAB81 Studio: chaveiros, lembranças, luminárias, vasos e objetos produzidos sob encomenda em impressão 3D.",
   });
 }
 
@@ -27,8 +27,8 @@ export default function ProdutosPage() {
     <>
       <PageHeader
         eyebrow="Produtos autorais"
-        title="Objetos de design, fabricados sob encomenda."
-        lead="Peças criadas no estúdio, produzidas uma a uma em impressão 3D e personalizáveis em cor e medida. Os pedidos são feitos por orçamento."
+        title="Produtos autorais e personalizados."
+        lead="Peças criadas no estúdio, produzidas sob encomenda em impressão 3D e personalizáveis em cor, medida, nome ou logomarca. Os pedidos são feitos por orçamento."
         crumbs={[{ name: "Produtos", path: "/produtos" }]}
       />
       <div className="container-site space-y-20">

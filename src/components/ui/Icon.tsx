@@ -51,6 +51,18 @@ const paths = {
     </>
   ),
   spark: <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l2.5 2.5m7 7L18 18M6 18l2.5-2.5m7-7L18 6" />,
+  tag: (
+    <>
+      <path d="M3 12V4h8l9 9-8 8-9-9Z" />
+      <circle cx="7.5" cy="8.5" r="1.5" />
+    </>
+  ),
+  store: (
+    <>
+      <path d="M4 9h16l-1.5-5h-13L4 9Z" />
+      <path d="M5 9v11h14V9M9 20v-6h6v6" />
+    </>
+  ),
   hammer: (
     <>
       <path d="m14 7 3-3 3 3-3 3" />
