@@ -53,6 +53,7 @@ export function Header({ logo }: { logo: ReactNode }) {
   }, [open]);
 
   return (
+    <>
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-300 ${
         scrolled || open
@@ -120,12 +121,13 @@ export function Header({ logo }: { logo: ReactNode }) {
         </div>
       </div>
 
-      {/* Menu mobile */}
+    </header>
+      {/* Menu mobile: fora do <header> porque o backdrop-filter dele prenderia o painel "fixed" à altura do cabeçalho */}
       <div
         id="menu-mobile"
         ref={menuRef}
         hidden={!open}
-        className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto bg-carbon bg-layers lg:hidden"
+        className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-carbon bg-layers lg:hidden"
       >
         <nav aria-label="Menu móvel" className="container-site flex min-h-full flex-col pb-10 pt-6">
           <ul className="border-t border-line">
@@ -160,6 +162,6 @@ export function Header({ logo }: { logo: ReactNode }) {
           <p className="mt-auto pt-10 text-xs uppercase tracking-[0.3em] text-titanium-600">Ideias ganham forma.</p>
         </nav>
       </div>
-    </header>
+    </>
   );
 }
