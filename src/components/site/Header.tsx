@@ -37,8 +37,7 @@ export function Header({ logo }: { logo: ReactNode }) {
   useEffect(() => {
     if (!open) return;
     document.body.style.overflow = "hidden";
-    const first = menuRef.current?.querySelector<HTMLElement>("a,button");
-    first?.focus();
+    menuRef.current?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
@@ -125,11 +124,12 @@ export function Header({ logo }: { logo: ReactNode }) {
       {/* Menu mobile: fora do <header> porque o backdrop-filter dele prenderia o painel "fixed" à altura do cabeçalho */}
       <div
         id="menu-mobile"
+        tabIndex={-1}
         ref={menuRef}
         hidden={!open}
-        className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-carbon bg-layers lg:hidden"
+        className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-carbon outline-none lg:hidden"
       >
-        <nav aria-label="Menu móvel" className="container-site flex min-h-full flex-col pb-10 pt-6">
+        <nav aria-label="Menu móvel" className="container-site flex min-h-full flex-col pb-8 pt-4">
           <ul className="border-t border-line">
             {NAV_ITEMS.map((item, i) => {
               const active = isActive(pathname, item.href);
@@ -138,13 +138,13 @@ export function Header({ logo }: { logo: ReactNode }) {
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className="flex items-center justify-between py-5 font-display text-2xl font-semibold"
+                    className="flex items-center justify-between py-3.5 font-display text-lg font-medium"
                   >
                     <span className="flex items-baseline gap-4">
-                      <span className="font-sans text-xs font-medium text-titanium-600">0{i + 1}</span>
+                      <span className="font-sans text-[0.6875rem] font-medium text-titanium-600">0{i + 1}</span>
                       <span className={active ? "text-orange" : "text-offwhite"}>{item.label}</span>
                     </span>
-                    <Icon name="arrow" size={20} className="text-titanium" />
+                    <Icon name="arrow" size={16} className="text-titanium-600" />
                   </Link>
                 </li>
               );
@@ -152,7 +152,7 @@ export function Header({ logo }: { logo: ReactNode }) {
           </ul>
           <Link
             href="/orcamento"
-            className="btn btn-primary mt-8 w-full"
+            className="btn btn-primary mt-6 w-full"
             data-track="quote_cta_click"
             data-track-location="mobile_menu"
           >
