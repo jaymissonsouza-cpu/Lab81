@@ -22,6 +22,10 @@ const crops = [
   ["7b721049-image.png", "trofeus.webp", 0, 470, 1122, 730],
   ["5233611d-image.png", "lembrancinhas-casamento.webp", 0, 750, 1122, 490],
   ["92db7948-image.png", "topo-de-bolo.webp", 0, 470, 1122, 720],
+  ["2ca762d8-image.png", "chaveiros-com-nome.webp", 0, 628, 1122, 572],
+  ["c926a1f5-image.png", "suporte-de-celular.webp", 300, 548, 822, 662],
+  ["6bd45f71-image.png", "organizador-de-cabos.webp", 0, 640, 1122, 580],
+  ["0041e8c6-image.png", "plaquinha-de-mesa.webp", 0, 640, 1122, 560],
 ];
 for (const [f, name, left, top, width, height] of crops) {
   await sharp(path.join(dir, f)).extract({ left, top, width, height }).webp({ quality: 86 }).toFile(out(name));

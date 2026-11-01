@@ -1,6 +1,6 @@
 import type Database from "better-sqlite3";
 import { BLOG_POSTS, BLOG_POSTS_V2 } from "@/content/blog";
-import { AREAS, PRODUCTS_V3, PRODUCT_CATEGORIES_V3, PROJECTS_V3 } from "@/content/solucoes";
+import { AREAS, AREAS_V4, PRODUCTS_V3, PRODUCTS_V4, PRODUCT_CATEGORIES_V3, PROJECTS_V3, PROJECTS_V4 } from "@/content/solucoes";
 
 /**
  * Conteúdo inicial. Executado uma única vez (marcador "seed_version" em settings).
@@ -205,7 +205,7 @@ const DEMO_PRODUCTS = [
  * Etapas incrementais: cada uma roda uma única vez (controle por settings.seed_version).
  * Nunca altere uma etapa já publicada; adicione uma nova. Assim, itens apagados no painel não voltam.
  */
-const STEPS: ((db: Database.Database) => void)[] = [seedV1, seedV2, seedV3];
+const STEPS: ((db: Database.Database) => void)[] = [seedV1, seedV2, seedV3, seedV4];
 
 export function seedDatabase(db: Database.Database) {
   const read = () =>
@@ -219,6 +219,22 @@ export function seedDatabase(db: Database.Database) {
       String(STEPS.length),
     );
   }).immediate();
+}
+
+/** v4 — novas artes: chaveiros com nome, plaquinha de mesa, suporte de celular e organizador de cabos. */
+function seedV4(db: Database.Database) {
+  const cat = db.prepare("INSERT OR IGNORE INTO categories (type, slug, name, sort) VALUES (?, ?, ?, ?)");
+  for (const a of AREAS_V4) cat.run("project", a.slug, a.name, a.sort);
+  const base = (db.prepare("SELECT COALESCE(MAX(sort), 0) + 1 AS n FROM projects").get() as { n: number }).n;
+  const proj = db.prepare(`INSERT OR IGNORE INTO projects
+    (slug, title, category, material, application, summary, challenge, solution, description, images, featured, published, is_demo, sort)
+    VALUES (@slug, @title, @category, @material, @application, @summary, @challenge, @solution, @description, @images, @featured, 1, 0, @sort)`);
+  PROJECTS_V4.forEach((p, i) => proj.run({ ...p, images: JSON.stringify(p.images), sort: base + i }));
+  const pbase = (db.prepare("SELECT COALESCE(MAX(sort), 0) + 1 AS n FROM products").get() as { n: number }).n;
+  const prod = db.prepare(`INSERT OR IGNORE INTO products
+    (slug, name, category, summary, description, materials, colors, sizes, customizable, availability, images, published, is_demo, sort)
+    VALUES (@slug, @name, @category, @summary, @description, @materials, '[]', '[]', 1, 'sob_encomenda', @images, 1, 0, @sort)`);
+  PRODUCTS_V4.forEach((p, i) => prod.run({ ...p, materials: JSON.stringify(p.materials), images: JSON.stringify(p.images), sort: pbase + i }));
 }
 
 /**

@@ -335,3 +335,101 @@ export const PRODUCTS_V3 = [
     images: [img("souvenirs-recife.webp", "Miniaturas e chaveiros de Recife impressos em 3D")],
   },
 ];
+
+/* ─────────────── Etapa v4: novas artes ─────────────── */
+
+export const AREAS_V4 = [{ slug: "personalizados", name: "Personalizados e presentes", sort: 7 }];
+
+export const PROJECTS_V4 = [
+  {
+    slug: "chaveiros-com-inicial-e-nome",
+    title: "Chaveiros com inicial e nome",
+    category: "personalizados",
+    material: "PLA",
+    application: "Presentes, equipes e eventos",
+    summary: "Chaveiros com a inicial em destaque e o nome em relevo, em duas cores.",
+    challenge: "Criar um presente pequeno, útil e realmente pessoal.",
+    solution: "Letra em volume com o nome aplicado em relevo, argola reforçada e cores à escolha.",
+    description: "Pequenos detalhes. Grandes ideias. Ótimo para presentes, equipes, turmas e lembranças de eventos.",
+    images: [img("chaveiros-com-nome.webp", "Chaveiros com iniciais A, R, S e M e nomes André, Rafael, Sophia e Marcelo impressos em 3D")],
+    featured: 0,
+  },
+  {
+    slug: "plaquinha-de-mesa-personalizada",
+    title: "Plaquinha de mesa e kit exclusivo",
+    category: "personalizados",
+    material: "PLA",
+    application: "Escritórios, recepções e presentes corporativos",
+    summary: "Plaquinha de mesa com nome e cargo em relevo, com peças exclusivas em caixa de presente.",
+    challenge: "Valorizar a pessoa e a marca com um objeto único, feito para durar.",
+    solution: "Prisma de mesa com nome e cargo em relevo e detalhe na cor da marca; kit com peça geométrica e chaveiro.",
+    description: "Feito para ser único: plaquinhas personalizadas e objetos exclusivos para pessoas e empresas que valorizam o detalhe.",
+    images: [img("plaquinha-de-mesa.webp", "Plaquinha de mesa Ricardo Lima com caixa de presente e chaveiro impressos em 3D")],
+    featured: 0,
+  },
+  {
+    slug: "suporte-de-celular",
+    title: "Suporte de celular",
+    category: "empresas",
+    material: "PLA / PETG",
+    application: "Mesa de trabalho e home office",
+    summary: "Suporte de celular em formato triangular, estável e com detalhe na cor da marca.",
+    challenge: "Deixar o celular visível e ao alcance, sem ocupar espaço.",
+    solution: "Base larga com apoio inclinado e passagem para cabo, em duas cores.",
+    description: "Design que facilita o seu dia. Pode levar a logomarca da empresa, ideal como brinde.",
+    images: [img("suporte-de-celular.webp", "Suporte de celular preto com detalhe laranja impresso em 3D sobre mesa de madeira")],
+    featured: 0,
+  },
+  {
+    slug: "organizador-de-cabos",
+    title: "Organizador de cabos e acessórios",
+    category: "empresas",
+    material: "PLA",
+    application: "Escritórios, estúdios e home office",
+    summary: "Bandejas modulares para cabos, carregadores, fones, canetas e pen drives.",
+    challenge: "Acabar com a bagunça de cabos e acessórios na mesa de trabalho.",
+    solution: "Módulos que se encaixam e se empilham, com divisões nas medidas dos itens.",
+    description: "Cada coisa no seu lugar: organizadores modulares, práticos e sob medida para o seu espaço.",
+    images: [img("organizador-de-cabos.webp", "Organizadores modulares de cabos, carregador, fone e canetas impressos em 3D")],
+    featured: 0,
+  },
+];
+
+export const PRODUCTS_V4 = [
+  {
+    slug: "chaveiro-com-inicial",
+    name: "Chaveiro com inicial e nome",
+    category: "festas-e-presentes",
+    summary: "Inicial em destaque e nome em relevo, em duas cores.",
+    description: "Escolha a letra, o nome e as cores. Vendido por unidade ou em lotes para equipes, turmas e eventos.",
+    materials: ["PLA"],
+    images: [img("chaveiros-com-nome.webp", "Chaveiros com inicial e nome impressos em 3D")],
+  },
+  {
+    slug: "plaquinha-de-mesa",
+    name: "Plaquinha de mesa",
+    category: "escritorio",
+    summary: "Nome e cargo em relevo, com detalhe na cor da marca.",
+    description: "Para mesas, recepções e presentes corporativos. Pode ser combinada com caixa e chaveiro.",
+    materials: ["PLA"],
+    images: [img("plaquinha-de-mesa.webp", "Plaquinha de mesa personalizada impressa em 3D")],
+  },
+  {
+    slug: "suporte-de-celular",
+    name: "Suporte de celular",
+    category: "escritorio",
+    summary: "Suporte triangular estável, em duas cores.",
+    description: "Pode levar a logomarca da sua empresa. Ótima opção de brinde corporativo.",
+    materials: ["PLA", "PETG"],
+    images: [img("suporte-de-celular.webp", "Suporte de celular impresso em 3D")],
+  },
+  {
+    slug: "organizador-de-cabos",
+    name: "Organizador de cabos",
+    category: "escritorio",
+    summary: "Bandejas modulares para cabos e acessórios.",
+    description: "Combine e empilhe os módulos conforme o seu espaço.",
+    materials: ["PLA"],
+    images: [img("organizador-de-cabos.webp", "Organizador de cabos modular impresso em 3D")],
+  },
+];

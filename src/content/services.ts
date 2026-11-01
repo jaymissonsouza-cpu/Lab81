@@ -90,7 +90,7 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
       "Chaveiros, lembrancinhas de festas e eventos, presentes e brindes corporativos com nome ou logomarca, feitos em impressão 3D em Recife. Peça seu orçamento.",
     lead:
       "Uma lembrança que ninguém mais tem. Criamos chaveiros, lembrancinhas, presentes e brindes com nome, data, formato ou logomarca, do modelo à peça pronta.",
-    image: { src: "/img/solucoes/lembrancinhas-casamento.webp", alt: "Lembrancinhas personalizadas com iniciais impressas em 3D" },
+    image: { src: "/img/solucoes/chaveiros-com-nome.webp", alt: "Chaveiros personalizados com inicial e nome impressos em 3D" },
     highlights: [
       { title: "Personalização de verdade", text: "Nomes, iniciais, datas, formatos e logomarcas criados para você." },
       { title: "Da unidade à pequena série", text: "Sem molde: dá para fazer uma peça especial ou lotes para eventos." },
