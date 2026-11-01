@@ -52,3 +52,26 @@ e coloque em `GH_TOKEN` no projeto Docker **antes** de mudar a visibilidade.
 Contêiner `node:22-bookworm-slim` rodando `boot.mjs` contra a release real: download, start, páginas 200,
 orçamento com upload gravado no volume, otimização de imagens (sharp) e banco (better-sqlite3) funcionando, e troca
 automática de versão após novo push.
+
+## Retomar a primeira publicação (checklist da sessão)
+
+Situação em 01/11/2026: código e pipeline prontos; release "producao" sendo gerada a cada push na `main`;
+contêiner validado localmente. **Faltam apenas acessos:**
+
+1. [ ] Token da API da Hostinger disponível no ambiente do Claude (`HOSTINGER_API_TOKEN` ou segredo de rede para
+       `developers.hostinger.com`). Nunca colar o token no chat.
+2. [ ] Domínio `lab81studio.com.br`: em 01/11/2026 o Registro.br ainda o mostrava como **não registrado**.
+       Concluir a compra/validação (CPF ou CNPJ) no hPanel → Domínios.
+
+Com o token disponível, a sessão executa:
+
+```bash
+node scripts/hostinger.mjs status            # confirma VPS, Docker Manager e situação do domínio
+ADMIN_EMAIL=jaymissonsouza@gmail.com ADMIN_PASSWORD="<gerada e entregue ao usuário>" node scripts/hostinger.mjs deploy
+# site no ar em http://<IP do VPS>
+node scripts/hostinger.mjs dns               # quando o domínio estiver ativo
+node scripts/hostinger.mjs https             # depois que o DNS propagar
+```
+
+Se o `status` indicar que o VPS não tem Docker, a alternativa é reinstalar o VPS com o modelo "Ubuntu + Docker"
+(apaga o conteúdo do VPS: confirmar com o usuário antes) ou usar `deploy/setup-vps.sh`.
