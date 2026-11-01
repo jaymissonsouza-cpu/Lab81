@@ -20,7 +20,7 @@
 - O ambiente do Claude não acessa o IP do VPS (rede restrita). Para conferir o site use o endereço do EasyPanel
   `https://lab81-site.nfkqah.easypanel.host/` (acessível daqui), o domínio e o DNS público (dns.google).
 - EasyPanel: projeto `lab81`, serviço `site` (fonte: Dockerfile inline com `ADD .../deploy/boot.mjs`), volume
-  `lab81-data` em `/data`, domínios na porta 3000. **O mesmo VPS hospeda outros projetos do usuário
+  `lab81-data` em `/data`, domínios na porta 3000 (`lab81studio.com.br` e `www`, ambos com HTTPS ok desde 01/11/2026). **O mesmo VPS hospeda outros projetos do usuário
   (projeto `jaymisson`: n8n, gemelli, pgimports, catálogo etc.) — nunca alterar nada fora de `lab81`.**
 - Login do painel do site: `admin@lab81studio.com.br`; a senha inicial foi gerada no 1º boot (logs do serviço) e
   está com o usuário. Nunca repetir senhas no chat.
