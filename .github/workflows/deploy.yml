@@ -1,0 +1,94 @@
+# Integração e publicação contínuas.
+#  - Em qualquer branch/PR: lint, tipos e build (garante que nada quebrado chegue à produção).
+#  - Em push na main: publica no VPS (se os secrets estiverem configurados).
+#
+# Secrets (Settings → Secrets and variables → Actions → Secrets):
+#   VPS_HOST          IP ou domínio do servidor
+#   VPS_USER          usuário de deploy (padrão do setup: lab81)
+#   VPS_SSH_KEY       chave privada SSH (o setup-vps.sh mostra como gerar)
+#   VPS_KNOWN_HOSTS   saída de: ssh-keyscan -H <IP-do-servidor>
+#   VPS_PORT          (opcional) porta SSH, padrão 22
+# Variables (aba Variables):
+#   NEXT_PUBLIC_SITE_URL   ex.: https://www.lab81.com.br
+#   NEXT_PUBLIC_GTM_ID     (opcional)
+
+name: CI / Deploy
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # 22.04 (glibc 2.35) mantém o módulo nativo do SQLite compatível com Ubuntu 22.04 e 24.04 no servidor
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://www.lab81.com.br' }}
+          NEXT_PUBLIC_GTM_ID: ${{ vars.NEXT_PUBLIC_GTM_ID }}
+          STORAGE_DIR: ${{ runner.temp }}/build-storage
+      - name: Empacotar release
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          cp deploy/remote-deploy.sh .next/standalone/
+          tar -C .next/standalone -czf release.tgz .
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          name: release
+          path: release.tgz
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-22.04
+    environment: production
+    steps:
+      - name: Verificar configuração do servidor
+        id: check
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          if [ -z "$HOST" ]; then
+            echo "::warning::Secrets do VPS não configurados: build validado, publicação ignorada."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/download-artifact@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          name: release
+      - name: Publicar
+        if: steps.check.outputs.ready == 'true'
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER || 'lab81' }}
+          PORT: ${{ secrets.VPS_PORT || '22' }}
+          KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          RELEASE: ${{ github.sha }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/id_deploy && chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          SSH="ssh -i ~/.ssh/id_deploy -p $PORT -o StrictHostKeyChecking=yes"
+          scp -i ~/.ssh/id_deploy -P "$PORT" release.tgz "$USER@$HOST:/srv/lab81/releases/$RELEASE.tgz"
+          $SSH "$USER@$HOST" "mkdir -p /srv/lab81/releases/$RELEASE && tar -xzf /srv/lab81/releases/$RELEASE.tgz -C /srv/lab81/releases/$RELEASE && rm /srv/lab81/releases/$RELEASE.tgz && bash /srv/lab81/releases/$RELEASE/remote-deploy.sh $RELEASE"

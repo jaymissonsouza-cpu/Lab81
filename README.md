@@ -87,39 +87,59 @@ Veja `.env.example`. Principais:
 
 > `NEXT_PUBLIC_*` é embutida no build: rode `npm run build` novamente após alterá-la.
 
-## 4. Publicação na VPS
+## 4. Publicação (VPS + GitHub Actions)
 
-Exemplo com Ubuntu, usuário `lab81`, código em `/srv/lab81/app` e dados em `/srv/lab81/storage`.
+Publicação **automática**: todo push na branch `main` passa por lint, tipos e build e, se estiver tudo certo,
+vai para o servidor. Se a nova versão não responder, o servidor volta sozinho para a anterior.
+As outras branches e PRs só são validadas, sem publicar.
 
-```bash
-# 1. Dependências do sistema
-sudo apt install -y nginx sqlite3 certbot python3-certbot-nginx
-# Node 22 LTS (ex.: via NodeSource ou nvm)
-
-# 2. Código e configuração
-sudo mkdir -p /srv/lab81/{storage,backups} && sudo chown -R lab81: /srv/lab81
-git clone <repo> /srv/lab81/app && cd /srv/lab81/app
-cp .env.example /srv/lab81/.env   # preencha; use STORAGE_DIR=/srv/lab81/storage
-npm ci
-set -a && . /srv/lab81/.env && set +a && npm run build   # gera .next/standalone (já com public/ e static/)
-
-# 3. Serviço e proxy
-sudo cp deploy/lab81.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable --now lab81
-sudo cp deploy/nginx.conf /etc/nginx/sites-available/lab81 && sudo ln -s ../sites-available/lab81 /etc/nginx/sites-enabled/
-sudo certbot --nginx -d lab81.com.br -d www.lab81.com.br && sudo nginx -t && sudo systemctl reload nginx
-
-# 4. Backup diário
-crontab -e   # 0 3 * * * STORAGE_DIR=/srv/lab81/storage /srv/lab81/app/deploy/backup.sh
+```
+push na main → GitHub Actions (lint, tipos, build) → envia release por SSH → troca a versão → teste de saúde
+                                                                                   └─ falhou? reverte
 ```
 
-**Atualizações:** `git pull && npm ci && npm run build && sudo systemctl restart lab81`.
+### 4.1 Preparar o servidor (uma única vez)
+
+Requisitos: VPS **Ubuntu 22.04 ou 24.04 (x86_64)**, 1 GB de RAM ou mais, acesso root e um domínio.
+
+1. No seu computador, gere a chave de deploy:
+   ```bash
+   ssh-keygen -t ed25519 -f lab81_deploy -N "" -C "github-deploy"
+   ```
+2. No servidor, como root, rode o script e responda às perguntas (domínio, e-mail e senha do painel e o conteúdo de `lab81_deploy.pub`):
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/jaymissonsouza-cpu/Lab81/main/deploy/setup-vps.sh -o setup-vps.sh
+   bash setup-vps.sh
+   ```
+   O script instala Node 22, Nginx, firewall, serviço `lab81`, backup diário às 3h e cria o `/srv/lab81/.env` com a senha
+   do painel já protegida (hash) e um `SESSION_SECRET` aleatório.
+3. No GitHub → *Settings → Secrets and variables → Actions*:
+   - **Secrets:** `VPS_HOST` (IP), `VPS_USER` = `lab81`, `VPS_SSH_KEY` (conteúdo de `lab81_deploy`, a chave **privada**),
+     `VPS_KNOWN_HOSTS` (saída de `ssh-keyscan -H <IP>`)
+   - **Variables:** `NEXT_PUBLIC_SITE_URL` (ex.: `https://www.lab81.com.br`) e, se houver, `NEXT_PUBLIC_GTM_ID`
+4. Aponte o DNS do domínio para o IP do servidor, faça um push na `main` e, com o DNS propagado, ative o HTTPS:
+   ```bash
+   certbot --nginx -d www.lab81.com.br -d lab81.com.br --redirect
+   ```
+
+### 4.2 Estrutura no servidor
+
+```
+/srv/lab81/
+  .env            configuração e segredos (fora do Git)
+  current ->      release ativa (link)
+  releases/       últimas 5 versões publicadas
+  storage/        banco SQLite, arquivos de orçamento, imagens do painel  ← nunca é apagado no deploy
+  backups/        cópias diárias (14 dias)
+```
+
+Comandos úteis: `systemctl status lab81` · `journalctl -u lab81 -f` · `/usr/local/bin/lab81-backup`.
+Para alterar e-mail/SMTP/webhook, edite `/srv/lab81/.env` e rode `systemctl restart lab81`.
 
 Pontos importantes:
-- `client_max_body_size` no Nginx precisa comportar os uploads (padrão do formulário: até 150 MB por envio).
-- O banco e os uploads ficam em `STORAGE_DIR` e **não** fazem parte do build. Faça backup dessa pasta.
-- O limitador de tentativas (login, orçamento, contato) é em memória: adequado a **um** processo Node. Para várias
-  instâncias, troque por Redis.
-- Redirecione `lab81.com.br` → `www` (ou o inverso) e mantenha o mesmo domínio em `NEXT_PUBLIC_SITE_URL`.
+- Após cada deploy, as páginas são regeneradas com os dados reais do banco (`/api/revalidate`, protegido pelo `SESSION_SECRET`).
+- O limitador de tentativas é em memória: adequado a **um** processo Node. Para várias instâncias, use Redis.
+- `deploy/nginx.conf` e `deploy/backup.sh` são referências para configuração manual (o `setup-vps.sh` já faz tudo).
 
 ## 5. Painel administrativo (`/admin`)
 
