@@ -12,8 +12,6 @@
 import { spawn, execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { pipeline } from "node:stream/promises";
-import { Readable } from "node:stream";
 
 const REPO = process.env.RELEASE_REPO || "jaymissonsouza-cpu/Lab81";
 const TAG = process.env.RELEASE_TAG || "producao";
@@ -33,7 +31,8 @@ async function latestAsset() {
   const res = await fetch(`https://api.github.com/repos/${REPO}/releases/tags/${TAG}`, { headers: ghHeaders() });
   if (!res.ok) throw new Error(`GitHub respondeu ${res.status} ao consultar a release "${TAG}"`);
   const rel = await res.json();
-  const asset = rel.assets?.find((a) => a.name === "release.tgz");
+  // "uploaded" garante que o arquivo terminou de subir (o upload substitui o anterior)
+  const asset = rel.assets?.find((a) => a.name === "release.tgz" && (a.state ?? "uploaded") === "uploaded");
   if (!asset) throw new Error('Release sem o arquivo "release.tgz"');
   return { id: String(asset.id), url: asset.url, label: rel.body?.split("\n")[0] ?? "" };
 }
@@ -44,10 +43,19 @@ async function download(asset) {
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(ROOT, `${asset.id}.tgz`);
   const res = await fetch(asset.url, { headers: ghHeaders({ accept: "application/octet-stream" }), redirect: "follow" });
-  if (!res.ok || !res.body) throw new Error(`Download falhou: ${res.status}`);
-  await pipeline(Readable.fromWeb(res.body), fs.createWriteStream(file));
-  execFileSync("tar", ["-xzf", file, "-C", dir]);
-  fs.rmSync(file, { force: true });
+  if (!res.ok) throw new Error(`Download falhou: ${res.status}`);
+  // Leitura completa em memória (~30 MB): evita instabilidades de streaming do cliente HTTP do Node
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length < 1024 * 1024) throw new Error(`Download incompleto (${buf.length} bytes)`);
+  fs.writeFileSync(file, buf);
+  try {
+    execFileSync("tar", ["-xzf", file, "-C", dir]);
+  } catch (e) {
+    fs.rmSync(dir, { recursive: true, force: true });
+    throw e;
+  } finally {
+    fs.rmSync(file, { force: true });
+  }
   // mantém só as 3 versões mais recentes
   const dirs = fs
     .readdirSync(ROOT)
@@ -157,6 +165,13 @@ async function main() {
     }
   }, INTERVAL);
 }
+
+// Um erro inesperado no supervisor não deve derrubar o site que já está no ar.
+process.on("uncaughtException", (e) => {
+  log("erro inesperado:", e?.stack || e);
+  if (!child || child.exitCode !== null) process.exit(1); // sem site rodando: o Docker reinicia o contêiner
+});
+process.on("unhandledRejection", (e) => log("promessa rejeitada:", e?.stack || e));
 
 for (const sig of ["SIGTERM", "SIGINT"]) {
   process.on(sig, async () => {
