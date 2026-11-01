@@ -87,7 +87,14 @@ Veja `.env.example`. Principais:
 
 > `NEXT_PUBLIC_*` é embutida no build: rode `npm run build` novamente após alterá-la.
 
-## 4. Publicação (VPS + GitHub Actions)
+## 4. Publicação
+
+**Caminho principal (em uso): Hostinger VPS com Docker.** O servidor busca sozinho cada nova versão publicada pela
+branch `main`. Guia completo e comandos em [`docs/PUBLICACAO.md`](docs/PUBLICACAO.md).
+
+O caminho abaixo (SSH + systemd + Nginx) continua disponível como alternativa para servidores sem Docker.
+
+### Alternativa: VPS sem Docker (SSH + GitHub Actions)
 
 Publicação **automática**: todo push na branch `main` passa por lint, tipos e build e, se estiver tudo certo,
 vai para o servidor. Se a nova versão não responder, o servidor volta sozinho para a anterior.
@@ -169,6 +176,7 @@ Eventos no `dataLayer`: `quote_cta_click`, `quote_start`, `quote_file_upload`, `
 
 ## 8. Documentos
 
+- [`docs/PUBLICACAO.md`](docs/PUBLICACAO.md): como o site é publicado e atualizado no servidor
 - [`docs/PENDENCIAS.md`](docs/PENDENCIAS.md): dados reais e integrações que faltam
 - [`docs/CHECKLIST-TESTES.md`](docs/CHECKLIST-TESTES.md): o que já foi verificado e o roteiro antes de publicar
 - [`docs/SEO.md`](docs/SEO.md): arquitetura, palavras-chave (hipóteses a validar) e próximos passos
