@@ -10,6 +10,7 @@
 // Repositório privado: defina GH_TOKEN (token de leitura) no ambiente do projeto.
 
 import { spawn, execFileSync } from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -18,6 +19,49 @@ const TAG = process.env.RELEASE_TAG || "producao";
 const INTERVAL = Math.max(60, Number(process.env.CHECK_INTERVAL || 300)) * 1000;
 const ROOT = "/srv/releases";
 const PORT = 3000;
+
+/**
+ * Configuração automática (para instalar sem digitar variáveis, ex.: pelo celular):
+ * se SESSION_SECRET / ADMIN_PASSWORD_HASH não forem informados, são gerados uma única vez e guardados
+ * no volume de dados (/data/.lab81-secrets.json). A senha inicial do painel aparece nos logs do contêiner.
+ */
+const DATA = process.env.STORAGE_DIR || "/data";
+const SECRETS_FILE = path.join(DATA, ".lab81-secrets.json");
+
+function scrypt(password) {
+  const salt = crypto.randomBytes(16);
+  const [N, r, p] = [16384, 8, 1];
+  const hash = crypto.scryptSync(password, salt, 64, { N, r, p });
+  return `scrypt:${N}:${r}:${p}:${salt.toString("base64")}:${hash.toString("base64")}`;
+}
+
+function ensureSecrets() {
+  fs.mkdirSync(DATA, { recursive: true });
+  let s = {};
+  try {
+    s = JSON.parse(fs.readFileSync(SECRETS_FILE, "utf8"));
+  } catch {}
+  let changed = false;
+  if (!process.env.SESSION_SECRET && !s.SESSION_SECRET) {
+    s.SESSION_SECRET = crypto.randomBytes(32).toString("hex");
+    changed = true;
+  }
+  if (!process.env.ADMIN_PASSWORD_HASH && !s.ADMIN_PASSWORD_HASH) {
+    // senha legível: 4 grupos de 4 caracteres sem ambiguidade (ex.: K7QM-2XPA-...)
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const raw = Array.from(crypto.randomBytes(16), (b) => alphabet[b % alphabet.length]).join("");
+    s.ADMIN_INITIAL_PASSWORD = raw.match(/.{4}/g).join("-");
+    s.ADMIN_PASSWORD_HASH = scrypt(s.ADMIN_INITIAL_PASSWORD);
+    changed = true;
+  }
+  if (changed) fs.writeFileSync(SECRETS_FILE, JSON.stringify(s, null, 2), { mode: 0o600 });
+  return {
+    SESSION_SECRET: process.env.SESSION_SECRET || s.SESSION_SECRET,
+    ADMIN_PASSWORD_HASH: process.env.ADMIN_PASSWORD_HASH || s.ADMIN_PASSWORD_HASH,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL || "admin@lab81studio.com.br",
+    initialPassword: process.env.ADMIN_PASSWORD_HASH ? null : s.ADMIN_INITIAL_PASSWORD,
+  };
+}
 
 const log = (...a) => console.log(new Date().toISOString(), "[boot]", ...a);
 const ghHeaders = (extra = {}) => ({
@@ -72,7 +116,15 @@ let stopping = false;
 function start(dir) {
   const p = spawn(process.execPath, ["server.js"], {
     cwd: dir,
-    env: { ...process.env, PORT: String(PORT), HOSTNAME: "0.0.0.0", NODE_ENV: "production" },
+    env: {
+      ...process.env,
+      SESSION_SECRET: SECRETS.SESSION_SECRET,
+      ADMIN_PASSWORD_HASH: SECRETS.ADMIN_PASSWORD_HASH,
+      ADMIN_EMAIL: SECRETS.ADMIN_EMAIL,
+      PORT: String(PORT),
+      HOSTNAME: "0.0.0.0",
+      NODE_ENV: "production",
+    },
     stdio: "inherit",
   });
   p.on("exit", (code) => {
@@ -115,7 +167,7 @@ async function stop(p) {
 }
 
 async function revalidate() {
-  const token = process.env.SESSION_SECRET;
+  const token = SECRETS.SESSION_SECRET;
   if (!token) return;
   try {
     await fetch(`http://127.0.0.1:${PORT}/api/revalidate`, { method: "POST", headers: { "x-revalidate-token": token } });
@@ -142,8 +194,13 @@ async function activate(asset) {
   }
 }
 
+let SECRETS;
+
 async function main() {
   fs.mkdirSync(ROOT, { recursive: true });
+  SECRETS = ensureSecrets();
+  log(`painel: /admin  ·  e-mail: ${SECRETS.ADMIN_EMAIL}`);
+  if (SECRETS.initialPassword) log(`SENHA INICIAL DO PAINEL: ${SECRETS.initialPassword}`);
   for (;;) {
     try {
       await activate(await latestAsset());

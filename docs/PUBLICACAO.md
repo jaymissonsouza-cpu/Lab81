@@ -53,6 +53,25 @@ Contêiner `node:22-bookworm-slim` rodando `boot.mjs` contra a release real: dow
 orçamento com upload gravado no volume, otimização de imagens (sharp) e banco (better-sqlite3) funcionando, e troca
 automática de versão após novo push.
 
+## Primeira instalação pelo celular (sem token, sem terminal)
+
+O compose funciona **sem nenhuma variável**: na primeira inicialização o contêiner gera o `SESSION_SECRET` e a
+**senha do painel**, guarda no volume (`/data/.lab81-secrets.json`) e mostra a senha nos logs do serviço `app`
+(linha `SENHA INICIAL DO PAINEL`). E-mail de login padrão: `admin@lab81studio.com.br`.
+
+No app/site da Hostinger (hPanel):
+
+1. **VPS → Docker Manager** → criar projeto a partir de URL (Compose) com
+   `https://raw.githubusercontent.com/jaymissonsouza-cpu/Lab81/main/deploy/docker-compose.yaml`, nome `lab81`.
+   Se o Docker Manager pedir para instalar o Docker ou trocar o sistema para "Ubuntu com Docker", aceitar
+   (o VPS é novo; trocar o sistema apaga o conteúdo do VPS).
+2. Abrir os **logs** do contêiner `app` e anotar a senha inicial.
+3. **Domínios → lab81studio.com.br → DNS**: registros **A** de `@` e `www` com o IP do VPS.
+   O HTTPS (Caddy + Let's Encrypt) é emitido sozinho quando o DNS propagar.
+
+Testado em 01/11/2026 sem variáveis: senha gerada e persistente após reinício, login no painel ok, site pelo IP
+na porta 80 e domínio redirecionando para HTTPS.
+
 ## Retomar a primeira publicação (checklist da sessão)
 
 Situação em 01/11/2026: código e pipeline prontos; release "producao" sendo gerada a cada push na `main`;

@@ -1,6 +1,8 @@
 # Projeto Docker do VPS (Hostinger Docker Manager ou qualquer host com Docker Compose).
-# Variáveis (.env do projeto): SITE_ADDRESS, SITE_URL, ADMIN_EMAIL, ADMIN_PASSWORD_HASH, SESSION_SECRET
-# e, opcionalmente, SMTP_*, QUOTE_*, GH_TOKEN (se o repositório for privado).
+# Funciona SEM nenhuma variável (instalação pelo celular): senha do painel e segredos são gerados
+# na primeira inicialização e a senha inicial aparece nos logs do contêiner "app".
+# Variáveis opcionais: SITE_DOMAINS, SITE_URL, ADMIN_EMAIL, ADMIN_PASSWORD_HASH, SESSION_SECRET,
+# SMTP_*, QUOTE_*, GH_TOKEN (se o repositório for privado).
 #
 # - app:   baixa a última versão publicada no GitHub e se atualiza sozinho (deploy/boot.mjs)
 # - caddy: proxy reverso com HTTPS automático (Let's Encrypt) assim que o domínio apontar para o VPS
@@ -16,10 +18,10 @@ services:
     environment:
       BOOT_URL: https://raw.githubusercontent.com/jaymissonsouza-cpu/Lab81/main/deploy/boot.mjs
       STORAGE_DIR: /data
-      SITE_URL: ${SITE_URL}
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
-      SESSION_SECRET: ${SESSION_SECRET}
+      SITE_URL: ${SITE_URL:-https://lab81studio.com.br}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-}
+      SESSION_SECRET: ${SESSION_SECRET:-}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
@@ -44,11 +46,12 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+      # HTTPS automático para o domínio assim que o DNS apontar para o VPS; acesso pelo IP via :80
+      SITE_DOMAINS: ${SITE_DOMAINS:-lab81studio.com.br, www.lab81studio.com.br}
     command:
       - sh
       - -c
-      - printf '%s {\n\tencode zstd gzip\n\treverse_proxy app:3000\n}\n' "$$SITE_ADDRESS" > /etc/caddy/Caddyfile && exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+      - printf '%s {\n\tencode zstd gzip\n\treverse_proxy app:3000\n}\n:80 {\n\tencode zstd gzip\n\treverse_proxy app:3000\n}\n' "$$SITE_DOMAINS" > /etc/caddy/Caddyfile && exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
     volumes:
       - caddy-data:/data
       - caddy-config:/config
