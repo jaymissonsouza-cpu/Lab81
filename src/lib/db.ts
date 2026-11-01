@@ -164,18 +164,17 @@ declare global {
 
 function open() {
   const db = new Database(storagePath("lab81.db"));
+  // busy_timeout primeiro: vários processos (ex.: workers do build) podem abrir o banco ao mesmo tempo
+  db.pragma("busy_timeout = 15000");
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = ON");
-  db.pragma("busy_timeout = 5000");
 
-  const current = db.pragma("user_version", { simple: true }) as number;
-  if (current < MIGRATIONS.length) {
-    const migrate = db.transaction(() => {
-      for (let v = current; v < MIGRATIONS.length; v++) db.exec(MIGRATIONS[v]);
-      db.pragma(`user_version = ${MIGRATIONS.length}`);
-    });
-    migrate();
-  }
+  // BEGIN IMMEDIATE + releitura da versão dentro do lock: só um processo migra, os outros esperam.
+  db.transaction(() => {
+    const current = db.pragma("user_version", { simple: true }) as number;
+    for (let v = current; v < MIGRATIONS.length; v++) db.exec(MIGRATIONS[v]);
+    if (current < MIGRATIONS.length) db.pragma(`user_version = ${MIGRATIONS.length}`);
+  }).immediate();
 
   seedDatabase(db);
   return db;

@@ -207,15 +207,17 @@ const DEMO_PRODUCTS = [
 const STEPS: ((db: Database.Database) => void)[] = [seedV1, seedV2];
 
 export function seedDatabase(db: Database.Database) {
-  const row = db.prepare("SELECT value FROM settings WHERE key = 'seed_version'").get() as { value: string } | undefined;
-  const current = Number(row?.value ?? 0) || 0;
-  if (current >= STEPS.length) return;
+  const read = () =>
+    Number((db.prepare("SELECT value FROM settings WHERE key = 'seed_version'").get() as { value: string } | undefined)?.value ?? 0) || 0;
+  if (read() >= STEPS.length) return;
   db.transaction(() => {
+    const current = read(); // relido dentro do lock (outro processo pode ter acabado de popular)
+    if (current >= STEPS.length) return;
     for (let v = current; v < STEPS.length; v++) STEPS[v](db);
     db.prepare("INSERT INTO settings (key, value) VALUES ('seed_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(
       String(STEPS.length),
     );
-  })();
+  }).immediate();
 }
 
 /** v2 — amplia o posicionamento: brindes/lembranças e soluções para empresas. */
