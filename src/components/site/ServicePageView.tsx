@@ -5,7 +5,6 @@ import { MATERIALS_INFO } from "@/content/services";
 import { PageHeader } from "./PageHeader";
 import { CtaBand } from "./CtaBand";
 import { JsonLd } from "./JsonLd";
-import { DemoBadge } from "@/components/ui/DemoBadge";
 import { Icon } from "@/components/ui/Icon";
 import { serviceJsonLd } from "@/lib/seo";
 
@@ -36,7 +35,6 @@ export function ServicePageView({ page, name }: { page: ServicePage; name: strin
         <div className="grid gap-6 lg:grid-cols-12">
           <div className="reveal relative aspect-[16/10] overflow-hidden rounded-lg border border-line lg:col-span-7">
             <Image src={page.image.src} alt={page.image.alt} fill sizes="(min-width: 1024px) 58vw, 100vw" className="object-cover" priority />
-            <DemoBadge className="absolute left-3 top-3" />
           </div>
           <ul className="grid gap-px overflow-hidden rounded-lg border border-line bg-line lg:col-span-5">
             {page.highlights.map((h, i) => (

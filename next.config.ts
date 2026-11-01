@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     qualities: [75, 90],
-    localPatterns: [{ pathname: "/demo/**" }, { pathname: "/brand/**" }, { pathname: "/media/**" }],
+    localPatterns: [{ pathname: "/demo/**" }, { pathname: "/img/**" }, { pathname: "/brand/**" }, { pathname: "/media/**" }],
   },
   experimental: {
     serverActions: {

@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { DemoBadge } from "@/components/ui/DemoBadge";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CtaBand } from "@/components/site/CtaBand";
 import { PortfolioGrid } from "@/components/site/PortfolioGrid";
 import { ProjectTile, toPortfolioItem } from "@/components/site/ProjectTile";
 import { SERVICE_CARDS, MATERIALS_INFO } from "@/content/services";
+import { AREA_CARDS } from "@/content/solucoes";
 import { listCategories, listPosts, listProjects } from "@/lib/repos";
 import { pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/format";
@@ -16,21 +16,11 @@ export const revalidate = 300;
 export function generateMetadata() {
   return pageMetadata({
     path: "/",
-    title: "LAB81 Studio | Impressão 3D em Recife — Da ideia ao objeto",
+    title: "LAB81 Studio | Impressão 3D em Recife — Não é só impressão 3D. É solução.",
     description:
-      "Impressão 3D em Recife para o que você imaginar: brindes e chaveiros personalizados, peças para empresas e restaurantes, peças técnicas, protótipos e decoração. Solicite seu orçamento.",
+      "Soluções em impressão 3D em Recife: porta-QR code e itens para restaurantes, displays para lojas, brindes corporativos, peças técnicas, protótipos, lembrancinhas e souvenirs. Solicite seu orçamento.",
   });
 }
-
-/** Amplitude de aplicações: deixa claro que o estúdio fabrica "qualquer coisa", não só decoração. */
-const APPLICATIONS: { icon: IconName; title: string; items: string; href: string }[] = [
-  { icon: "tag", title: "Brindes e lembranças", items: "Chaveiros, lembrancinhas de festas, presentes e brindes com logomarca", href: "/brindes-personalizados" },
-  { icon: "store", title: "Restaurantes e comércio", items: "Porta-QR code, porta-cardápios, displays de balcão e sinalização", href: "/solucoes-para-empresas" },
-  { icon: "gear", title: "Peças técnicas e reposição", items: "Suportes, encaixes, adaptadores e peças que não se encontram mais", href: "/impressao-3d-personalizada#pecas-funcionais" },
-  { icon: "prototype", title: "Protótipos e produtos", items: "Validação de forma, encaixe e função antes de produzir", href: "/prototipagem-3d" },
-  { icon: "cube", title: "Empresas e escritórios", items: "Gabaritos, organizadores, kits de boas-vindas e peças sob medida", href: "/solucoes-para-empresas" },
-  { icon: "spark", title: "Decoração e design", items: "Luminárias, vasos e objetos autorais, personalizáveis", href: "/produtos" },
-];
 
 const PROCESS: { n: string; icon: IconName; title: string; text: string }[] = [
   {
@@ -61,9 +51,9 @@ const PROCESS: { n: string; icon: IconName; title: string; text: string }[] = [
 
 const DIFFERENTIALS: { icon: IconName; title: string; text: string }[] = [
   { icon: "chat", title: "Atendimento personalizado", text: "Você conversa com quem projeta e fabrica a sua peça, do primeiro contato à entrega." },
-  { icon: "layers", title: "Orientação sobre materiais", text: "Indicamos o filamento certo para cada uso: decoração, encaixe, calor ou uso externo." },
+  { icon: "layers", title: "Orientação sobre materiais", text: "Indicamos o filamento certo para cada uso: exposição, encaixe, calor ou uso externo." },
   { icon: "cube", title: "Design e fabricação sob demanda", text: "Modelagem e impressão no mesmo estúdio, sem molde e sem quantidade mínima." },
-  { icon: "gear", title: "Soluções para diferentes aplicações", text: "Brindes, peças para empresas, peças técnicas, protótipos, presentes e decoração." },
+  { icon: "gear", title: "Soluções para diferentes áreas", text: "Restaurantes, lojas, empresas, indústria, festas e eventos: cada projeto pensado para o seu uso." },
   { icon: "pin", title: "Recife e outras regiões", text: "Atendimento em Recife e Região Metropolitana e envio para outras regiões conforme capacidade operacional." },
 ];
 
@@ -73,7 +63,6 @@ export default function HomePage() {
   const catName = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
   const items = projects.map(toPortfolioItem);
   const featured = items.filter((_, i) => projects[i].featured).slice(0, 3);
-  const heroDemo = true; // imagem do hero é demonstrativa até receber fotografia oficial
   const posts = listPosts({ publishedOnly: true }).slice(0, 3);
 
   return (
@@ -91,17 +80,15 @@ export default function HomePage() {
         <div className="container-site relative grid items-center gap-8 pb-12 pt-2 md:pt-10 lg:min-h-[min(40rem,calc(100svh-14rem))] lg:grid-cols-12 lg:gap-6 lg:pb-14 lg:pt-4">
           <div className="relative z-10 order-2 lg:order-none lg:col-span-6">
             <p className="eyebrow fade-up">Design + impressão 3D em Recife</p>
-            <h1 id="hero-title" className="fade-up fade-up-1 mt-6 text-display">
-              Da ideia
+            <h1 id="hero-title" className="fade-up fade-up-1 mt-6 text-h1 md:text-[clamp(3rem,1.6rem+4.2vw,5.75rem)]">
+              Não é só impressão 3D<span className="dot">.</span>
               <br />
-              ao objeto<span className="dot">.</span>
+              <span className="text-orange">É solução.</span>
             </h1>
             <p className="fade-up fade-up-2 mt-7 max-w-xl text-lead text-offwhite/90">
-              Criamos, desenvolvemos e fabricamos peças únicas com design, tecnologia e impressão 3D de precisão.
+              Criamos, desenvolvemos e fabricamos peças sob medida para restaurantes, lojas, empresas, indústria e eventos.
             </p>
-            <p className="fade-up fade-up-2 mt-3 max-w-xl text-titanium">
-              Impressão 3D personalizada, prototipagem e soluções criativas em Recife.
-            </p>
+            <p className="fade-up fade-up-2 mt-3 max-w-xl text-titanium">Da ideia ao objeto, com design, tecnologia e precisão em Recife.</p>
             <div className="fade-up fade-up-3 mt-10 flex flex-col gap-3 sm:flex-row">
               <Link href="/orcamento" className="btn btn-primary" data-track="quote_cta_click" data-track-location="hero">
                 Solicitar orçamento <Icon name="arrow" size={18} />
@@ -113,10 +100,10 @@ export default function HomePage() {
           </div>
 
           <div className="relative order-1 -mx-5 md:mx-0 lg:order-none lg:col-span-6 lg:-mr-10 xl:-mr-24">
-            <div className="build-up relative aspect-[4/3] overflow-hidden sm:aspect-[700/444] md:rounded-lg lg:rounded-none">
+            <div className="build-up relative aspect-[1122/600] overflow-hidden md:rounded-lg lg:rounded-none">
               <Image
-                src="/demo/luminaria-parametrica-laranja.webp"
-                alt="Luminária paramétrica laranja impressa em 3D, iluminada por dentro, sobre uma base de pedra escura"
+                src="/img/solucoes/solucoes-mix.webp"
+                alt="Soluções impressas em 3D pela LAB81: porta-QR code de cardápio, peça técnica, logotipo em 3D, suporte de celular e chaveiros"
                 fill
                 priority
                 fetchPriority="high"
@@ -126,18 +113,17 @@ export default function HomePage() {
               />
               <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-carbon via-transparent to-transparent lg:via-carbon/0" />
               <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
-              {heroDemo && <DemoBadge className="absolute bottom-3 left-5 md:left-3 lg:left-auto lg:right-56 xl:right-64" />}
             </div>
 
             <aside aria-label="O que fazemos" className="absolute -right-4 top-6 hidden w-44 min-[1600px]:block">
               <span aria-hidden="true" className="block h-0.5 w-8 bg-orange" />
               <p className="mt-4 font-sans text-xs uppercase leading-6 tracking-[0.35em] text-offwhite">Ideias ganham forma aqui.</p>
               <ul className="mt-6 space-y-1.5 text-[0.6875rem] uppercase tracking-[0.25em] text-titanium">
-                <li>Brindes e chaveiros</li>
-                <li>Soluções para empresas</li>
-                <li>Peças funcionais</li>
-                <li>Prototipagem</li>
-                <li>Decoração</li>
+                <li>Restaurantes</li>
+                <li>Varejo</li>
+                <li>Empresas</li>
+                <li>Peças técnicas</li>
+                <li>Festas e eventos</li>
               </ul>
             </aside>
           </div>
@@ -159,34 +145,49 @@ export default function HomePage() {
       </section>
 
 
-      {/* ───────────── APLICAÇÕES ───────────── */}
-      <section className="container-site mt-24 md:mt-32" aria-labelledby="aplicacoes-title">
-        <SectionHeading
-          id="aplicacoes-title"
-          eyebrow="O que fabricamos"
-          title="Se dá para imaginar, dá para imprimir."
-          lead="Do chaveiro com o seu nome à peça de reposição de um equipamento. Atendemos pessoas, eventos, restaurantes, lojas e empresas."
-        />
-        <ul className="mt-12 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-          {APPLICATIONS.map((a) => (
-            <li key={a.title} className="reveal group relative bg-carbon p-7 transition-colors hover:bg-carbon-800 md:p-8">
-              <Icon name={a.icon} size={30} className="text-orange" strokeWidth={1.25} />
-              <h3 className="mt-6 font-display text-xl font-semibold">
-                <Link href={a.href} className="after:absolute after:inset-0 group-hover:text-orange">
-                  {a.title}
-                </Link>
-              </h3>
-              <p className="mt-2 text-titanium">{a.items}</p>
+      {/* ───────────── ÁREAS ───────────── */}
+      <section className="container-site mt-24 md:mt-32" aria-labelledby="areas-title">
+        <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+          <SectionHeading
+            id="areas-title"
+            eyebrow="Soluções por área"
+            title="Uma solução para cada negócio."
+            lead="Do porta-QR code da mesa à peça de reposição da máquina. Atendemos restaurantes, lojas, empresas, indústria, festas e eventos."
+          />
+          <Link href="/orcamento" className="btn btn-outline shrink-0" data-track="quote_cta_click" data-track-location="areas">
+            Contar minha ideia <Icon name="arrow" size={18} />
+          </Link>
+        </div>
+        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {AREA_CARDS.map((a, i) => (
+            <li key={a.slug} className="reveal">
+              <article className="group relative h-full overflow-hidden rounded-lg border border-line bg-carbon-800 transition-[border-color,transform] duration-500 hover:-translate-y-1 hover:border-line-strong">
+                <div className="relative aspect-[16/10] overflow-hidden bg-carbon-900">
+                  <Image
+                    src={a.image.src}
+                    alt={a.image.alt}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                  <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-carbon-800 via-carbon-800/10 to-transparent" />
+                  <span className="absolute left-4 top-4 font-display text-sm font-semibold text-offwhite/80">0{i + 1}</span>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-display text-xl font-semibold">
+                    <Link href={`/projetos?categoria=${a.slug}`} className="after:absolute after:inset-0 group-hover:text-orange">
+                      {a.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-2 text-titanium">{a.text}</p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-offwhite">
+                    Ver soluções <Icon name="arrow" size={16} className="transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </article>
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-titanium">
-          Não encontrou o que procura?{" "}
-          <Link href="/orcamento" className="text-offwhite underline decoration-orange underline-offset-4 hover:text-orange" data-track="quote_cta_click" data-track-location="aplicacoes">
-            Conte sua ideia
-          </Link>{" "}
-          e a gente avalia.
-        </p>
       </section>
 
       {/* ───────────── SERVIÇOS ───────────── */}
@@ -237,7 +238,7 @@ export default function HomePage() {
             id="portfolio-title"
             eyebrow="Portfólio"
             title="Projetos que ganham forma."
-            lead="Ideias transformadas em objetos com design, tecnologia e precisão."
+            lead="Soluções reais para o dia a dia de quem vende, atende, produz e celebra."
           />
           <Link href="/projetos" className="btn btn-outline shrink-0">
             Ver todos os projetos <Icon name="arrow" size={18} />

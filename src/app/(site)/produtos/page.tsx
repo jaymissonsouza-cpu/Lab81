@@ -9,9 +9,9 @@ export const revalidate = 300;
 export function generateMetadata() {
   return pageMetadata({
     path: "/produtos",
-    title: "Produtos autorais impressos em 3D",
+    title: "Produtos sob encomenda impressos em 3D",
     description:
-      "Produtos autorais e personalizados da LAB81 Studio: chaveiros, lembranças, luminárias, vasos e objetos produzidos sob encomenda em impressão 3D.",
+      "Produtos sob encomenda em impressão 3D: porta-QR code, numeradores de mesa, porta-guardanapos, organizadores, troféus, topos de bolo, lembrancinhas e souvenirs de Recife.",
   });
 }
 
@@ -26,9 +26,9 @@ export default function ProdutosPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Produtos autorais"
-        title="Produtos autorais e personalizados."
-        lead="Peças criadas no estúdio, produzidas sob encomenda em impressão 3D e personalizáveis em cor, medida, nome ou logomarca. Os pedidos são feitos por orçamento."
+        eyebrow="Produtos sob encomenda"
+        title="Pronto para personalizar."
+        lead="Peças desenvolvidas pela LAB81 que você personaliza com cores, nomes, logomarca e quantidades. Os pedidos são feitos por orçamento, com valor e prazo antes de produzir."
         crumbs={[{ name: "Produtos", path: "/produtos" }]}
       />
       <div className="container-site space-y-20">

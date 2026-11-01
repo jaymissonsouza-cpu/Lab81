@@ -92,7 +92,7 @@ async function collectImages(form: FormData): Promise<{ images: ImageRef[] } | {
   const cover = str(form, "img_cover");
   let images: ImageRef[] = srcs
     .map((src, i) => ({ src, alt: (alts[i] ?? "").trim().slice(0, 300) }))
-    .filter((img) => img.src && !remove.has(img.src) && /^\/(demo|media)\//.test(img.src));
+    .filter((img) => img.src && !remove.has(img.src) && /^\/(demo|img|media)\//.test(img.src));
 
   const newFiles = form.getAll("new_images").filter((f): f is File => f instanceof File && f.size > 0);
   const newAlt = str(form, "new_alt", 300);
@@ -224,7 +224,7 @@ export async function savePostAction(_prev: FormState, form: FormData): Promise<
     if ("error" in saved) return { ok: false, message: saved.error };
     cover = saved.src;
   }
-  if (cover && !/^\/(demo|media|brand)\//.test(cover)) return { ok: false, message: "Imagem de capa inválida." };
+  if (cover && !/^\/(demo|img|media|brand)\//.test(cover)) return { ok: false, message: "Imagem de capa inválida." };
   const published_at = str(form, "published_at", 10) || null;
   if (published_at && !/^\d{4}-\d{2}-\d{2}$/.test(published_at)) return { ok: false, message: "Data inválida." };
   const prev = id ? getPostById(id) : null;

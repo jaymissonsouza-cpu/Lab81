@@ -50,8 +50,8 @@ export const SERVICE_CARDS: ServiceCard[] = [
     icon: "gear",
   },
   {
-    title: "Produtos autorais",
-    description: "Luminárias, vasos e objetos de design próprio, produzidos sob encomenda e personalizáveis.",
+    title: "Produtos sob encomenda",
+    description: "Porta-QR code, numeradores de mesa, organizadores, troféus, topos de bolo e souvenirs de Recife.",
     href: "/produtos",
     icon: "spark",
   },
@@ -90,7 +90,7 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
       "Chaveiros, lembrancinhas de festas e eventos, presentes e brindes corporativos com nome ou logomarca, feitos em impressão 3D em Recife. Peça seu orçamento.",
     lead:
       "Uma lembrança que ninguém mais tem. Criamos chaveiros, lembrancinhas, presentes e brindes com nome, data, formato ou logomarca, do modelo à peça pronta.",
-    image: { src: "/demo/vaso-escultural-areia.webp", alt: "Peça personalizada impressa em 3D (imagem demonstrativa)" },
+    image: { src: "/img/solucoes/lembrancinhas-casamento.webp", alt: "Lembrancinhas personalizadas com iniciais impressas em 3D" },
     highlights: [
       { title: "Personalização de verdade", text: "Nomes, iniciais, datas, formatos e logomarcas criados para você." },
       { title: "Da unidade à pequena série", text: "Sem molde: dá para fazer uma peça especial ou lotes para eventos." },
@@ -138,7 +138,7 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
     ],
     related: [
       { href: "/solucoes-para-empresas", label: "Soluções para empresas" },
-      { href: "/produtos", label: "Produtos autorais" },
+      { href: "/produtos", label: "Produtos sob encomenda" },
       { href: "/blog/brindes-e-chaveiros-personalizados-em-impressao-3d", label: "Ideias de brindes em impressão 3D" },
     ],
     ctaTitle: "Vamos criar sua lembrança?",
@@ -153,7 +153,7 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
       "Porta-QR code, displays, porta-cardápios, sinalização, organizadores, peças de reposição e brindes com a sua marca. Soluções em impressão 3D para negócios em Recife.",
     lead:
       "Peças sob medida para o dia a dia do seu negócio. Do porta-QR code da mesa à peça de reposição de um equipamento, desenvolvemos e fabricamos o que a sua operação precisa, com a sua marca quando fizer sentido.",
-    image: { src: "/demo/peca-funcional-preta.webp", alt: "Peça funcional preta impressa em 3D (imagem demonstrativa)" },
+    image: { src: "/img/solucoes/porta-qr-code.webp", alt: "Porta-QR Code de cardápio impresso em 3D para restaurante" },
     highlights: [
       { title: "Feito para a sua operação", text: "Medidas, encaixes e identidade visual do seu negócio." },
       { title: "Sem molde, sem estoque", text: "Produza a quantidade necessária e repita quando precisar." },
@@ -231,7 +231,7 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
       "Serviço de impressão 3D em Recife e Pernambuco: peças personalizadas, protótipos e modelagem 3D em PLA, PETG, ABS e ASA. Solicite um orçamento.",
     lead:
       "A LAB81 é um estúdio de design e fabricação digital em Recife. Desenvolvemos e imprimimos peças sob demanda para quem precisa de um objeto único, uma reposição, um protótipo ou uma pequena série.",
-    image: { src: "/demo/luminaria-parametrica-laranja.webp", alt: "Luminária paramétrica laranja impressa em 3D (imagem demonstrativa)" },
+    image: { src: "/img/solucoes/solucoes-mix.webp", alt: "Soluções impressas em 3D pela LAB81 em Recife" },
     highlights: [
       { title: "Atendimento próximo", text: "Conversa direta com quem projeta e fabrica a sua peça." },
       { title: "Orientação técnica", text: "Indicamos material, orientação de impressão e acabamento para cada uso." },
@@ -297,7 +297,7 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
       "Impressão 3D sob demanda em PLA, PETG, ABS e ASA. Peças personalizadas, funcionais e decorativas com análise técnica e acabamento profissional.",
     lead:
       "Envie seu arquivo ou sua ideia. Analisamos o modelo, indicamos o material certo e fabricamos a peça com o acabamento que o projeto pede.",
-    image: { src: "/demo/suporte-tecnico-preto.webp", alt: "Suporte técnico preto impresso em 3D (imagem demonstrativa)" },
+    image: { src: "/img/solucoes/pecas-tecnicas.webp", alt: "Peças técnicas sob medida impressas em 3D" },
     highlights: [
       { title: "Análise do arquivo", text: "Verificamos malha, espessuras e encaixes antes de imprimir." },
       { title: "Material adequado", text: "PLA, PETG, ABS ou ASA, conforme o uso real da peça." },
@@ -368,7 +368,7 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
       "Criamos modelos 3D a partir de esboços, fotos e medidas, prontos para impressão. Modelagem técnica de peças e modelagem de objetos decorativos.",
     lead:
       "Não tem o arquivo? A gente desenha. Transformamos esboços, fotos e medidas em modelos 3D pensados desde o início para serem fabricados.",
-    image: { src: "/demo/carcaca-aerodinamica-laranja.webp", alt: "Carcaça aerodinâmica com estrutura hexagonal impressa em 3D (imagem demonstrativa)" },
+    image: { src: "/img/solucoes/dispositivo-fixacao.webp", alt: "Dispositivo de fixação modelado e impresso em 3D" },
     highlights: [
       { title: "A partir do que você tem", text: "Esboço, foto, peça quebrada ou só uma ideia bem descrita." },
       { title: "Pensada para imprimir", text: "Espessuras, encaixes e ângulos definidos para a fabricação." },
@@ -429,7 +429,7 @@ export const SERVICE_PAGES: Record<string, ServicePage> = {
       "Protótipos impressos em 3D para validar forma, encaixe e função do seu produto antes da produção. Iterações rápidas com modelagem e impressão no mesmo estúdio.",
     lead:
       "Segure sua ideia na mão antes de investir em produção. Desenvolvemos protótipos para validar forma, encaixe e função, com ajustes rápidos entre uma versão e outra.",
-    image: { src: "/demo/carcaca-aerodinamica-2.webp", alt: "Protótipo de carcaça laranja com padrão hexagonal (imagem demonstrativa)" },
+    image: { src: "/img/solucoes/prototipo-carcaca.webp", alt: "Protótipo de carcaça com tampa impresso em 3D" },
     highlights: [
       { title: "Forma", text: "Aparência, proporção e ergonomia na mão." },
       { title: "Encaixe", text: "Verificação de medidas e montagem entre partes." },

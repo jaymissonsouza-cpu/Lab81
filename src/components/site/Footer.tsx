@@ -11,7 +11,7 @@ const SERVICES = [
   { href: "/solucoes-para-empresas", label: "Soluções para empresas" },
   { href: "/modelagem-3d", label: "Modelagem 3D" },
   { href: "/prototipagem-3d", label: "Prototipagem 3D" },
-  { href: "/produtos", label: "Produtos autorais" },
+  { href: "/produtos", label: "Produtos sob encomenda" },
 ];
 const STUDIO = [
   { href: "/projetos", label: "Projetos" },

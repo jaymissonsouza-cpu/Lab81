@@ -1,5 +1,6 @@
 import type Database from "better-sqlite3";
 import { BLOG_POSTS, BLOG_POSTS_V2 } from "@/content/blog";
+import { AREAS, PRODUCTS_V3, PRODUCT_CATEGORIES_V3, PROJECTS_V3 } from "@/content/solucoes";
 
 /**
  * Conteúdo inicial. Executado uma única vez (marcador "seed_version" em settings).
@@ -204,7 +205,7 @@ const DEMO_PRODUCTS = [
  * Etapas incrementais: cada uma roda uma única vez (controle por settings.seed_version).
  * Nunca altere uma etapa já publicada; adicione uma nova. Assim, itens apagados no painel não voltam.
  */
-const STEPS: ((db: Database.Database) => void)[] = [seedV1, seedV2];
+const STEPS: ((db: Database.Database) => void)[] = [seedV1, seedV2, seedV3];
 
 export function seedDatabase(db: Database.Database) {
   const read = () =>
@@ -218,6 +219,44 @@ export function seedDatabase(db: Database.Database) {
       String(STEPS.length),
     );
   }).immediate();
+}
+
+/**
+ * v3 — novo posicionamento ("Não é só impressão 3D. É solução."): soluções por área com as artes oficiais.
+ * Remove apenas os itens demonstrativos originais que continuam intactos (is_demo = 1);
+ * nada criado ou editado no painel é apagado.
+ */
+function seedV3(db: Database.Database) {
+  const oldProjects = DEMO_PROJECTS.map((p) => p.slug);
+  const oldProducts = DEMO_PRODUCTS.map((p) => p.slug);
+  const ph = (n: number) => Array(n).fill("?").join(",");
+  db.prepare(`DELETE FROM projects WHERE is_demo = 1 AND slug IN (${ph(oldProjects.length)})`).run(...oldProjects);
+  db.prepare(`DELETE FROM products WHERE is_demo = 1 AND slug IN (${ph(oldProducts.length)})`).run(...oldProducts);
+
+  const upCat = db.prepare(
+    "INSERT INTO categories (type, slug, name, sort) VALUES (?, ?, ?, ?) ON CONFLICT(type, slug) DO UPDATE SET name = excluded.name, sort = excluded.sort",
+  );
+  for (const a of AREAS) upCat.run("project", a.slug, a.name, a.sort);
+  for (const c of PRODUCT_CATEGORIES_V3) upCat.run("product", c.slug, c.name, c.sort);
+  // categorias antigas que ficaram vazias
+  db.prepare(
+    `DELETE FROM categories WHERE type = 'project' AND slug IN ('decoracao','personalizados','brindes-e-lembrancas')
+     AND slug NOT IN (SELECT category FROM projects)`,
+  ).run();
+  db.prepare(
+    `DELETE FROM categories WHERE type = 'product' AND slug IN ('luminarias','vasos-e-esculturas','organizacao','chaveiros-e-lembrancas')
+     AND slug NOT IN (SELECT category FROM products)`,
+  ).run();
+
+  const proj = db.prepare(`INSERT OR IGNORE INTO projects
+    (slug, title, category, material, application, summary, challenge, solution, description, images, featured, published, is_demo, sort)
+    VALUES (@slug, @title, @category, @material, @application, @summary, @challenge, @solution, @description, @images, @featured, 1, 0, @sort)`);
+  PROJECTS_V3.forEach((p, i) => proj.run({ ...p, images: JSON.stringify(p.images), sort: i }));
+
+  const prod = db.prepare(`INSERT OR IGNORE INTO products
+    (slug, name, category, summary, description, materials, colors, sizes, customizable, availability, images, published, is_demo, sort)
+    VALUES (@slug, @name, @category, @summary, @description, @materials, '[]', '[]', 1, 'sob_encomenda', @images, 1, 0, @sort)`);
+  PRODUCTS_V3.forEach((p, i) => prod.run({ ...p, materials: JSON.stringify(p.materials), images: JSON.stringify(p.images), sort: i }));
 }
 
 /** v2 — amplia o posicionamento: brindes/lembranças e soluções para empresas. */
