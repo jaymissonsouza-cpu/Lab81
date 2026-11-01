@@ -1,0 +1,59 @@
+# Projeto Docker do VPS (Hostinger Docker Manager ou qualquer host com Docker Compose).
+# Variáveis (.env do projeto): SITE_ADDRESS, SITE_URL, ADMIN_EMAIL, ADMIN_PASSWORD_HASH, SESSION_SECRET
+# e, opcionalmente, SMTP_*, QUOTE_*, GH_TOKEN (se o repositório for privado).
+#
+# - app:   baixa a última versão publicada no GitHub e se atualiza sozinho (deploy/boot.mjs)
+# - caddy: proxy reverso com HTTPS automático (Let's Encrypt) assim que o domínio apontar para o VPS
+services:
+  app:
+    image: node:22-bookworm-slim
+    restart: unless-stopped
+    working_dir: /srv
+    command:
+      - sh
+      - -c
+      - node -e "fetch(process.env.BOOT_URL).then(r=>{if(!r.ok)throw new Error(r.status);return r.text()}).then(t=>require('fs').writeFileSync('/srv/boot.mjs',t))" && exec node /srv/boot.mjs
+    environment:
+      BOOT_URL: https://raw.githubusercontent.com/jaymissonsouza-cpu/Lab81/main/deploy/boot.mjs
+      STORAGE_DIR: /data
+      SITE_URL: ${SITE_URL}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
+      SESSION_SECRET: ${SESSION_SECRET}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      QUOTE_NOTIFY_EMAIL: ${QUOTE_NOTIFY_EMAIL:-}
+      QUOTE_WEBHOOK_URL: ${QUOTE_WEBHOOK_URL:-}
+      QUOTE_WEBHOOK_SECRET: ${QUOTE_WEBHOOK_SECRET:-}
+      GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
+      GH_TOKEN: ${GH_TOKEN:-}
+    volumes:
+      - lab81-data:/data
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    command:
+      - sh
+      - -c
+      - printf '%s {\n\tencode zstd gzip\n\treverse_proxy app:3000\n}\n' "$$SITE_ADDRESS" > /etc/caddy/Caddyfile && exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  lab81-data:
+  caddy-data:
+  caddy-config:

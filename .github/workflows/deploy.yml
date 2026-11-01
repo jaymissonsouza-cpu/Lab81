@@ -1,16 +1,9 @@
 # Integração e publicação contínuas.
-#  - Em qualquer branch/PR: lint, tipos e build (garante que nada quebrado chegue à produção).
-#  - Em push na main: publica no VPS (se os secrets estiverem configurados).
-#
-# Secrets (Settings → Secrets and variables → Actions → Secrets):
-#   VPS_HOST          IP ou domínio do servidor
-#   VPS_USER          usuário de deploy (padrão do setup: lab81)
-#   VPS_SSH_KEY       chave privada SSH (o setup-vps.sh mostra como gerar)
-#   VPS_KNOWN_HOSTS   saída de: ssh-keyscan -H <IP-do-servidor>
-#   VPS_PORT          (opcional) porta SSH, padrão 22
-# Variables (aba Variables):
-#   NEXT_PUBLIC_SITE_URL   ex.: https://www.lab81.com.br
-#   NEXT_PUBLIC_GTM_ID     (opcional)
+#  - Em qualquer branch/PR: lint, tipos e build (nada quebrado chega à produção).
+#  - Em push na main: atualiza a release "producao" com o pacote do site.
+#    O servidor (deploy/boot.mjs, via Docker) verifica essa release a cada 5 minutos
+#    e coloca a nova versão no ar sozinho, com reversão automática se ela não responder.
+#  - Opcional: deploy por SSH direto num VPS (job "deploy-ssh"), se os secrets VPS_* existirem.
 
 name: CI / Deploy
 
@@ -40,7 +33,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://www.lab81.com.br' }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://lab81studio.com.br' }}
           NEXT_PUBLIC_GTM_ID: ${{ vars.NEXT_PUBLIC_GTM_ID }}
           STORAGE_DIR: ${{ runner.temp }}/build-storage
       - name: Empacotar release
@@ -55,7 +48,30 @@ jobs:
           path: release.tgz
           retention-days: 7
 
-  deploy:
+  release:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release
+      - name: Atualizar release "producao"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          NOTE="Versão ${GITHUB_SHA::7} — $(date -u +%Y-%m-%dT%H:%MZ)"
+          if gh release view producao >/dev/null 2>&1; then
+            gh release edit producao --notes "$NOTE" --target "$GITHUB_SHA"
+            gh release upload producao release.tgz --clobber
+          else
+            gh release create producao release.tgz --title "Produção" --notes "$NOTE" --target "$GITHUB_SHA" --latest
+          fi
+
+  deploy-ssh:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-22.04
