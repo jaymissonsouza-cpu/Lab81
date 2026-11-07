@@ -306,3 +306,43 @@ export async function saveSettingsAction(_prev: FormState, form: FormData): Prom
   refreshSite();
   return { ok: true, message: "Configurações salvas." };
 }
+
+/* ─────────────── Calculadora de custos ─────────────── */
+
+export async function saveCostDefaultsAction(raw: unknown): Promise<FormState> {
+  await requireAdmin();
+  const { normalizeDefaults } = await import("@/lib/cost");
+  const { saveCostDefaults } = await import("@/lib/repos");
+  saveCostDefaults(normalizeDefaults(raw));
+  revalidatePath("/admin/calculadora");
+  return { ok: true, message: "Parâmetros salvos." };
+}
+
+export async function saveCostCalcAction(input: { id?: number; job: unknown }): Promise<FormState & { id?: number }> {
+  await requireAdmin();
+  const { calculate, normalizeDefaults, DEFAULT_COST_SETTINGS } = await import("@/lib/cost");
+  const { saveCostCalc, getCostDefaultsRaw } = await import("@/lib/repos");
+  const job = (input.job && typeof input.job === "object" ? input.job : {}) as import("@/lib/cost").CostJob;
+  const name = String(job.name ?? "").trim().slice(0, 120);
+  if (!name) return { ok: false, message: "Dê um nome ao cálculo para salvar." };
+  const defaults = normalizeDefaults(getCostDefaultsRaw() ?? DEFAULT_COST_SETTINGS);
+  const r = calculate(defaults, job);
+  const id = saveCostCalc({
+    id: input.id || undefined,
+    name,
+    job: JSON.stringify({ ...job, name }).slice(0, 5000),
+    unit_cost_cents: Math.round(r.perUnit.cost * 100),
+    unit_price_cents: Math.round(r.perUnit.price * 100),
+    quantity: Math.max(1, Math.floor(Number(job.quantity) || 1)),
+  });
+  revalidatePath("/admin/calculadora");
+  return { ok: true, message: "Cálculo salvo.", id };
+}
+
+export async function deleteCostCalcAction(form: FormData) {
+  await requireAdmin();
+  const { deleteCostCalc } = await import("@/lib/repos");
+  deleteCostCalc(Number(form.get("id")));
+  revalidatePath("/admin/calculadora");
+  redirect("/admin/calculadora");
+}

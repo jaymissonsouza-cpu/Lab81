@@ -7,6 +7,7 @@ const ITEMS = [
   { href: "/admin", label: "Visão geral" },
   { href: "/admin/orcamentos", label: "Orçamentos" },
   { href: "/admin/mensagens", label: "Mensagens" },
+  { href: "/admin/calculadora", label: "Calculadora de custos" },
   { href: "/admin/projetos", label: "Projetos" },
   { href: "/admin/produtos", label: "Produtos" },
   { href: "/admin/blog", label: "Blog" },

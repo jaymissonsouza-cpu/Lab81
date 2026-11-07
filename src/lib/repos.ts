@@ -514,3 +514,50 @@ export function setContactMessageStatus(id: number, status: ContactMessage["stat
 export function countNewMessages() {
   return (db().prepare("SELECT COUNT(*) n FROM contact_messages WHERE status = 'novo'").get() as { n: number }).n;
 }
+
+/* ─────────────── Calculadora de custos ─────────────── */
+
+export type CostCalc = {
+  id: number;
+  name: string;
+  job: string;
+  unit_cost_cents: number;
+  unit_price_cents: number;
+  quantity: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export function getCostDefaultsRaw(): unknown {
+  const row = db().prepare("SELECT value FROM settings WHERE key = 'cost_defaults'").get() as { value: string } | undefined;
+  return parseJson<unknown>(row?.value, null);
+}
+export function saveCostDefaults(value: unknown) {
+  db()
+    .prepare("INSERT INTO settings (key, value) VALUES ('cost_defaults', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value")
+    .run(JSON.stringify(value));
+}
+export function listCostCalcs(): CostCalc[] {
+  return db().prepare("SELECT * FROM cost_calcs ORDER BY updated_at DESC, id DESC LIMIT 200").all() as CostCalc[];
+}
+export function getCostCalc(id: number) {
+  return db().prepare("SELECT * FROM cost_calcs WHERE id = ?").get(id) as CostCalc | undefined;
+}
+export function saveCostCalc(c: { id?: number; name: string; job: string; unit_cost_cents: number; unit_price_cents: number; quantity: number }) {
+  if (c.id) {
+    db()
+      .prepare(
+        "UPDATE cost_calcs SET name=@name, job=@job, unit_cost_cents=@unit_cost_cents, unit_price_cents=@unit_price_cents, quantity=@quantity, updated_at=datetime('now') WHERE id=@id",
+      )
+      .run(c);
+    return c.id;
+  }
+  return Number(
+    db()
+      .prepare("INSERT INTO cost_calcs (name, job, unit_cost_cents, unit_price_cents, quantity) VALUES (@name, @job, @unit_cost_cents, @unit_price_cents, @quantity)")
+      .run(c).lastInsertRowid,
+  );
+}
+export function deleteCostCalc(id: number) {
+  db().prepare("DELETE FROM cost_calcs WHERE id = ?").run(id);
+}

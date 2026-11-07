@@ -156,6 +156,18 @@ const MIGRATIONS: string[] = [
   /* 2 — empresa (opcional) no orçamento, para pedidos B2B */ `
   ALTER TABLE quotes ADD COLUMN company TEXT NOT NULL DEFAULT '';
   `,
+  /* 3 — calculadora de custos: cálculos salvos */ `
+  CREATE TABLE cost_calcs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    job TEXT NOT NULL,
+    unit_cost_cents INTEGER NOT NULL DEFAULT 0,
+    unit_price_cents INTEGER NOT NULL DEFAULT 0,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  `,
 ];
 
 declare global {
