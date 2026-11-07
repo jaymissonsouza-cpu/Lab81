@@ -23,6 +23,23 @@ function passwordFingerprint() {
   return crypto.createHash("sha256").update(currentPasswordHash() ?? "").digest("base64url").slice(0, 16);
 }
 
+/** E-mail de login: o alterado em "Minha conta" tem prioridade sobre ADMIN_EMAIL. */
+export function currentAdminEmail(): string | undefined {
+  try {
+    const row = db().prepare("SELECT value FROM settings WHERE key = 'admin_email'").get() as { value: string } | undefined;
+    if (row?.value) return row.value;
+  } catch {
+    /* banco indisponível */
+  }
+  return process.env.ADMIN_EMAIL || undefined;
+}
+
+export function setAdminEmail(email: string) {
+  db()
+    .prepare("INSERT INTO settings (key, value) VALUES ('admin_email', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value")
+    .run(email.trim().toLowerCase());
+}
+
 export function setAdminPassword(newPassword: string) {
   db()
     .prepare("INSERT INTO settings (key, value) VALUES ('admin_password_hash', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value")
@@ -43,7 +60,7 @@ const COOKIE = "lab81_admin";
 const MAX_AGE = 60 * 60 * 8; // 8 horas
 
 export function authConfigured() {
-  return !!(process.env.ADMIN_EMAIL && currentPasswordHash() && (process.env.SESSION_SECRET?.length ?? 0) >= 32);
+  return !!(currentAdminEmail() && currentPasswordHash() && (process.env.SESSION_SECRET?.length ?? 0) >= 32);
 }
 
 function secret() {
@@ -73,7 +90,7 @@ export function checkCredentials(email: string, password: string) {
   if (!authConfigured()) return false;
   const emailOk = crypto.timingSafeEqual(
     crypto.createHash("sha256").update(email.trim().toLowerCase()).digest(),
-    crypto.createHash("sha256").update(process.env.ADMIN_EMAIL!.trim().toLowerCase()).digest(),
+    crypto.createHash("sha256").update(currentAdminEmail()!.trim().toLowerCase()).digest(),
   );
   const passOk = verifyAdminPassword(password);
   return emailOk && passOk;

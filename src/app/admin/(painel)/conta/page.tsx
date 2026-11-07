@@ -1,17 +1,17 @@
 import { requireAdmin } from "@/lib/auth";
 import { AdminForm } from "@/components/admin/AdminForm";
 import { Section } from "@/components/admin/Fields";
-import { changePasswordAction } from "../../actions";
+import { changeEmailAction, changePasswordAction } from "../../actions";
 
 export const metadata = { title: "Minha conta" };
 
-function PwField({ id, label, autoComplete, hint }: { id: string; label: string; autoComplete: string; hint?: string }) {
+function PwField({ id, label, autoComplete, hint, prefix = "pw" }: { id: string; label: string; autoComplete: string; hint?: string; prefix?: string }) {
   return (
     <div>
-      <label htmlFor={`pw-${id}`} className="field-label">
+      <label htmlFor={`${prefix}-${id}`} className="field-label">
         {label}
       </label>
-      <input id={`pw-${id}`} name={id} type="password" autoComplete={autoComplete} required className="field" />
+      <input id={`${prefix}-${id}`} name={id} type="password" autoComplete={autoComplete} required className="field" />
       {hint && <p className="field-hint">{hint}</p>}
     </div>
   );
@@ -25,6 +25,17 @@ export default async function ContaPage() {
       <p className="mt-2 text-titanium">
         Login: <strong className="text-offwhite">{session.email}</strong>
       </p>
+      <AdminForm action={changeEmailAction} className="mt-8" submitLabel="Alterar e-mail">
+        <Section title="E-mail de login" description="O e-mail que você digita para entrar no painel.">
+          <div>
+            <label htmlFor="em-email" className="field-label">
+              Novo e-mail de login
+            </label>
+            <input id="em-email" name="email" type="email" inputMode="email" autoComplete="username" required defaultValue={session.email} className="field" />
+          </div>
+          <PwField id="current" prefix="em" label="Senha atual (para confirmar)" autoComplete="current-password" />
+        </Section>
+      </AdminForm>
       <AdminForm action={changePasswordAction} className="mt-8" submitLabel="Alterar senha">
         <Section title="Alterar senha" description="Depois de alterar, outros aparelhos conectados precisarão entrar de novo.">
           <PwField id="current" label="Senha atual" autoComplete="current-password" hint="Na primeira troca, é a senha que aparece nos logs do EasyPanel." />

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { checkCredentials, createSession, destroySession, requireAdmin, setAdminPassword, verifyAdminPassword } from "@/lib/auth";
+import { checkCredentials, createSession, destroySession, requireAdmin, setAdminEmail, setAdminPassword, verifyAdminPassword } from "@/lib/auth";
 import { clientIp, rateLimit, resetRateLimit } from "@/lib/rate-limit";
 import {
   QUOTE_STATUSES,
@@ -366,4 +366,19 @@ export async function changePasswordAction(_prev: FormState, form: FormData): Pr
   resetRateLimit(`pwchange:${ip}`);
   await createSession(session.email); // mantém este aparelho conectado; os demais saem
   return { ok: true, message: "Senha alterada! Use a nova senha nos próximos acessos." };
+}
+
+export async function changeEmailAction(_prev: FormState, form: FormData): Promise<FormState> {
+  await requireAdmin();
+  const ip = clientIp(await headers());
+  const rl = rateLimit(`pwchange:${ip}`, 5, 15 * 60_000);
+  if (!rl.ok) return { ok: false, message: `Muitas tentativas. Aguarde ${Math.ceil(rl.retryAfter / 60)} minutos.` };
+  const email = String(form.get("email") ?? "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 160) return { ok: false, message: "Informe um e-mail válido." };
+  if (!verifyAdminPassword(String(form.get("current") ?? ""))) return { ok: false, message: "A senha atual está incorreta." };
+  setAdminEmail(email);
+  resetRateLimit(`pwchange:${ip}`);
+  await createSession(email);
+  revalidatePath("/admin", "layout");
+  return { ok: true, message: `E-mail de login alterado para ${email}.` };
 }
