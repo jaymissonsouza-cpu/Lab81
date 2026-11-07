@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { checkCredentials, createSession, destroySession, requireAdmin } from "@/lib/auth";
+import { checkCredentials, createSession, destroySession, requireAdmin, setAdminPassword, verifyAdminPassword } from "@/lib/auth";
 import { clientIp, rateLimit, resetRateLimit } from "@/lib/rate-limit";
 import {
   QUOTE_STATUSES,
@@ -345,4 +345,25 @@ export async function deleteCostCalcAction(form: FormData) {
   deleteCostCalc(Number(form.get("id")));
   revalidatePath("/admin/calculadora");
   redirect("/admin/calculadora");
+}
+
+/* ─────────────── Conta ─────────────── */
+
+export async function changePasswordAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const session = await requireAdmin();
+  const ip = clientIp(await headers());
+  const rl = rateLimit(`pwchange:${ip}`, 5, 15 * 60_000);
+  if (!rl.ok) return { ok: false, message: `Muitas tentativas. Aguarde ${Math.ceil(rl.retryAfter / 60)} minutos.` };
+  const current = String(form.get("current") ?? "");
+  const next = String(form.get("next") ?? "");
+  const confirm = String(form.get("confirm") ?? "");
+  if (!verifyAdminPassword(current)) return { ok: false, message: "A senha atual está incorreta." };
+  if (next.length < 8) return { ok: false, message: "A nova senha precisa ter pelo menos 8 caracteres." };
+  if (next.length > 200) return { ok: false, message: "Senha longa demais." };
+  if (next !== confirm) return { ok: false, message: "A confirmação não é igual à nova senha." };
+  if (next === current) return { ok: false, message: "A nova senha precisa ser diferente da atual." };
+  setAdminPassword(next);
+  resetRateLimit(`pwchange:${ip}`);
+  await createSession(session.email); // mantém este aparelho conectado; os demais saem
+  return { ok: true, message: "Senha alterada! Use a nova senha nos próximos acessos." };
 }

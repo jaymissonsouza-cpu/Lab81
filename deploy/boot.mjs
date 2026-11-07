@@ -200,7 +200,7 @@ async function main() {
   fs.mkdirSync(ROOT, { recursive: true });
   SECRETS = ensureSecrets();
   log(`painel: /admin  ·  e-mail: ${SECRETS.ADMIN_EMAIL}`);
-  if (SECRETS.initialPassword) log(`SENHA INICIAL DO PAINEL: ${SECRETS.initialPassword}`);
+  if (SECRETS.initialPassword) log(`SENHA INICIAL DO PAINEL: ${SECRETS.initialPassword} (deixa de valer se você trocar a senha em Minha conta)`);
   for (;;) {
     try {
       await activate(await latestAsset());

@@ -14,6 +14,7 @@ const ITEMS = [
   { href: "/admin/categorias", label: "Categorias" },
   { href: "/admin/seo", label: "SEO das páginas" },
   { href: "/admin/configuracoes", label: "Configurações" },
+  { href: "/admin/conta", label: "Minha conta" },
 ];
 
 export function AdminNav({ badges }: { badges: Record<string, number> }) {

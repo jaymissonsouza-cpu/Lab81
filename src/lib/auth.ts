@@ -2,6 +2,37 @@ import "server-only";
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { db } from "./db";
+
+/**
+ * Senha atual do painel: a alterada pelo próprio usuário (tabela settings) tem prioridade sobre a
+ * senha inicial (variável ADMIN_PASSWORD_HASH, gerada no primeiro boot).
+ */
+function currentPasswordHash(): string | undefined {
+  try {
+    const row = db().prepare("SELECT value FROM settings WHERE key = 'admin_password_hash'").get() as { value: string } | undefined;
+    if (row?.value) return row.value;
+  } catch {
+    /* banco indisponível: usa a variável */
+  }
+  return process.env.ADMIN_PASSWORD_HASH || undefined;
+}
+
+/** Impressão digital curta da senha: muda quando a senha muda e invalida sessões antigas. */
+function passwordFingerprint() {
+  return crypto.createHash("sha256").update(currentPasswordHash() ?? "").digest("base64url").slice(0, 16);
+}
+
+export function setAdminPassword(newPassword: string) {
+  db()
+    .prepare("INSERT INTO settings (key, value) VALUES ('admin_password_hash', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value")
+    .run(hashPassword(newPassword));
+}
+
+export function verifyAdminPassword(password: string) {
+  const h = currentPasswordHash();
+  return !!h && verifyPassword(password, h);
+}
 
 /**
  * Autenticação do painel: um administrador definido por variáveis de ambiente
@@ -12,7 +43,7 @@ const COOKIE = "lab81_admin";
 const MAX_AGE = 60 * 60 * 8; // 8 horas
 
 export function authConfigured() {
-  return !!(process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD_HASH && (process.env.SESSION_SECRET?.length ?? 0) >= 32);
+  return !!(process.env.ADMIN_EMAIL && currentPasswordHash() && (process.env.SESSION_SECRET?.length ?? 0) >= 32);
 }
 
 function secret() {
@@ -44,7 +75,7 @@ export function checkCredentials(email: string, password: string) {
     crypto.createHash("sha256").update(email.trim().toLowerCase()).digest(),
     crypto.createHash("sha256").update(process.env.ADMIN_EMAIL!.trim().toLowerCase()).digest(),
   );
-  const passOk = verifyPassword(password, process.env.ADMIN_PASSWORD_HASH!);
+  const passOk = verifyAdminPassword(password);
   return emailOk && passOk;
 }
 
@@ -53,7 +84,7 @@ function sign(payload: string) {
 }
 
 export async function createSession(email: string) {
-  const payload = Buffer.from(JSON.stringify({ e: email, x: Date.now() + MAX_AGE * 1000 })).toString("base64url");
+  const payload = Buffer.from(JSON.stringify({ e: email, x: Date.now() + MAX_AGE * 1000, v: passwordFingerprint() })).toString("base64url");
   const jar = await cookies();
   jar.set(COOKIE, `${payload}.${sign(payload)}`, {
     httpOnly: true,
@@ -77,8 +108,9 @@ export async function getSession(): Promise<{ email: string } | null> {
   const expected = sign(payload);
   if (sig.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
   try {
-    const data = JSON.parse(Buffer.from(payload, "base64url").toString()) as { e: string; x: number };
+    const data = JSON.parse(Buffer.from(payload, "base64url").toString()) as { e: string; x: number; v?: string };
     if (data.x < Date.now()) return null;
+    if (data.v !== passwordFingerprint()) return null; // senha trocada: sessões antigas deixam de valer
     return { email: data.e };
   } catch {
     return null;
